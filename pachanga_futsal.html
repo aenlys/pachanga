@@ -27,7 +27,6 @@
     min-height: 100vh;
   }
 
-  /* Textura de campo */
   body::before {
     content: '';
     position: fixed;
@@ -41,7 +40,64 @@
 
   .container { max-width: 960px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
-  /* Header */
+  /* Loading overlay */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--fondo);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    gap: 16px;
+  }
+
+  #loading-overlay h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--amarillo);
+    letter-spacing: 3px;
+  }
+
+  #loading-overlay p {
+    font-family: 'Barlow Condensed', sans-serif;
+    color: var(--gris);
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--borde);
+    border-top-color: var(--verde-claro);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Sync indicator */
+  #sync-status {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 5px;
+    z-index: 100;
+    transition: all 0.3s;
+  }
+
+  .sync-ok { background: var(--verde-oscuro); color: #4ade80; border: 1px solid var(--verde); }
+  .sync-saving { background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
+  .sync-error { background: #1a0d0d; color: #f87171; border: 1px solid #5a1010; }
+
   header {
     text-align: center;
     padding: 40px 0 30px;
@@ -67,7 +123,6 @@
     margin-top: 6px;
   }
 
-  /* Tabs */
   .tabs {
     display: flex;
     gap: 4px;
@@ -94,18 +149,12 @@
     transition: all 0.2s;
   }
 
-  .tab.active {
-    background: var(--verde);
-    color: white;
-  }
-
+  .tab.active { background: var(--verde); color: white; }
   .tab:hover:not(.active) { color: var(--blanco); background: var(--borde); }
 
-  /* Panels */
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* Cards */
   .card {
     background: var(--tarjeta);
     border: 1px solid var(--borde);
@@ -125,12 +174,7 @@
     gap: 10px;
   }
 
-  /* Inputs */
-  .form-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
+  .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
   input[type="text"], input[type="number"], select {
     background: var(--fondo);
@@ -168,13 +212,7 @@
   .btn-rojo { background: #7a1a1a; color: white; font-size: 12px; padding: 5px 10px; }
   .btn-rojo:hover { background: #a02020; }
 
-  /* Lista jugadores */
-  .jugadores-lista {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-  }
+  .jugadores-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 
   .jugador-chip {
     background: var(--verde-oscuro);
@@ -199,7 +237,6 @@
   }
   .jugador-chip button:hover { color: #ff6b6b; }
 
-  /* Goles por jugador en partido */
   .goles-jugadores {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -220,11 +257,7 @@
 
   .gol-item span { font-size: 14px; font-weight: 600; flex: 1; }
 
-  .gol-counter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .gol-counter { display: flex; align-items: center; gap: 6px; }
 
   .gol-counter button {
     background: var(--borde);
@@ -250,7 +283,6 @@
     color: var(--amarillo);
   }
 
-  /* Historial */
   .partido-card {
     background: var(--fondo);
     border: 1px solid var(--borde);
@@ -297,12 +329,7 @@
     margin-bottom: 8px;
   }
 
-  .goleadores-partido {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-  }
+  .goleadores-partido { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 
   .gol-badge {
     font-size: 12px;
@@ -314,12 +341,7 @@
     color: #a0d4b0;
   }
 
-  /* Tabla estadísticas */
-  .stats-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
+  .stats-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 
   .stats-table th {
     font-family: 'Barlow Condensed', sans-serif;
@@ -332,40 +354,22 @@
     border-bottom: 1px solid var(--borde);
   }
 
-  .stats-table td {
-    padding: 11px 12px;
-    border-bottom: 1px solid var(--borde);
-    vertical-align: middle;
-  }
-
+  .stats-table td { padding: 11px 12px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
   .stats-table tr:last-child td { border-bottom: none; }
-
   .stats-table tr:hover td { background: rgba(255,255,255,0.03); }
 
-  .rank-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: var(--gris);
-    width: 30px;
-  }
-
+  .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gris); width: 30px; }
   .rank-1 { color: var(--amarillo); }
   .rank-2 { color: #c0c0c0; }
   .rank-3 { color: #cd7f32; }
 
   .nombre-cell { font-weight: 700; font-size: 15px; }
 
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: var(--blanco);
-  }
-
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--blanco); }
   .stat-verde { color: #4ade80; }
   .stat-amarillo { color: var(--amarillo); }
   .stat-rojo { color: #f87171; }
 
-  /* Resumen global */
   .resumen-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -381,29 +385,10 @@
     text-align: center;
   }
 
-  .resumen-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px;
-    line-height: 1;
-    color: var(--amarillo);
-  }
+  .resumen-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--amarillo); }
+  .resumen-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); margin-top: 4px; }
 
-  .resumen-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--gris);
-    margin-top: 4px;
-  }
-
-  /* Resultado selector */
-  .resultado-selector {
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-  }
+  .resultado-selector { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 
   .res-btn {
     flex: 1;
@@ -438,7 +423,6 @@
 
   .empty-state .icon { font-size: 40px; display: block; margin-bottom: 10px; }
 
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -457,13 +441,7 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .marcador-inputs {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-  }
+  .marcador-inputs { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
 
   .marcador-inputs label {
     font-family: 'Barlow Condensed', sans-serif;
@@ -484,12 +462,7 @@
     padding: 6px 10px;
   }
 
-  .vs-sep {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: var(--gris);
-    margin-top: 20px;
-  }
+  .vs-sep { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gris); margin-top: 20px; }
 
   @media (max-width: 600px) {
     header h1 { font-size: 44px; }
@@ -499,6 +472,17 @@
 </style>
 </head>
 <body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <h2>⚽ La Pachanga</h2>
+  <p>Conectando con Firebase...</p>
+</div>
+
+<!-- Sync status -->
+<div id="sync-status" class="sync-ok" style="display:none">✓ Sincronizado</div>
+
 <div class="container">
   <header>
     <h1>⚽ La Pachanga</h1>
@@ -516,14 +500,12 @@
   <div class="panel active" id="panel-nuevo">
     <div class="card">
       <h2>⚽ Registrar Partido</h2>
-
       <div class="form-row">
         <div style="flex:1; min-width:160px">
           <label style="font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--gris); display:block; margin-bottom:6px">Fecha del partido</label>
           <input type="text" id="fecha-partido" placeholder="Viernes dd/mm/aaaa">
         </div>
       </div>
-
       <div style="margin-top:18px">
         <label style="font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--gris); display:block; margin-bottom:6px">Resultado</label>
         <div class="resultado-selector">
@@ -532,7 +514,6 @@
           <button class="res-btn" id="btn-derrota" onclick="selRes('derrota')">💀 Derrota</button>
         </div>
       </div>
-
       <div class="marcador-inputs">
         <div>
           <label>Nosotros</label>
@@ -597,16 +578,51 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-  // Estado
-  let state = JSON.parse(localStorage.getItem('pachanga') || '{"jugadores":[],"partidos":[]}');
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // Configuración Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLt6S1OIOGeNwjHiaoGCkxcMiis9h6TGo",
+    authDomain: "pachanga-6518c.firebaseapp.com",
+    databaseURL: "https://pachanga-6518c-default-rtdb.firebaseio.com",
+    projectId: "pachanga-6518c",
+    storageBucket: "pachanga-6518c.firebasestorage.app",
+    messagingSenderId: "691898587301",
+    appId: "1:691898587301:web:2c34942d765cc6f97d154c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Estado en memoria
+  let state = { jugadores: [], partidos: [] };
   let resultadoSel = null;
   let golesJugadores = {};
 
-  function save() {
-    localStorage.setItem('pachanga', JSON.stringify(state));
+  // Indicador de sync
+  function setSyncStatus(status, msg) {
+    const el = document.getElementById('sync-status');
+    el.style.display = 'block';
+    el.className = 'sync-' + status;
+    el.textContent = msg;
   }
 
+  // Guardar en Firebase
+  async function save() {
+    setSyncStatus('saving', '⏳ Guardando...');
+    try {
+      await set(ref(db, 'pachanga'), state);
+      setSyncStatus('ok', '✓ Sincronizado');
+    } catch(e) {
+      setSyncStatus('error', '✗ Error al guardar');
+      toast('❌ Error al guardar en Firebase');
+    }
+  }
+
+  // Toast
   function toast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -615,7 +631,7 @@
   }
 
   // Tabs
-  function setTab(tab) {
+  window.setTab = function(tab) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('panel-' + tab).classList.add('active');
@@ -624,26 +640,18 @@
     if(tab === 'estadisticas') renderEstadisticas();
     if(tab === 'jugadores') renderJugadores();
     if(tab === 'nuevo') renderGolesForm();
-  }
-
-  // Fecha auto
-  window.onload = () => {
-    const hoy = new Date();
-    document.getElementById('fecha-partido').value = hoy.toLocaleDateString('es-ES', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
-    renderGolesForm();
-    renderJugadores();
   };
 
   // Resultado
-  function selRes(r) {
+  window.selRes = function(r) {
     resultadoSel = r;
     document.getElementById('btn-victoria').className = 'res-btn' + (r==='victoria' ? ' sel-victoria' : '');
     document.getElementById('btn-empate').className = 'res-btn' + (r==='empate' ? ' sel-empate' : '');
     document.getElementById('btn-derrota').className = 'res-btn' + (r==='derrota' ? ' sel-derrota' : '');
-  }
+  };
 
   // Jugadores
-  function addJugador() {
+  window.addJugador = function() {
     const inp = document.getElementById('nuevo-jugador');
     const nombre = inp.value.trim();
     if(!nombre) return;
@@ -654,15 +662,15 @@
     renderJugadores();
     renderGolesForm();
     toast('✅ ' + nombre + ' añadido');
-  }
+  };
 
-  function removeJugador(nombre) {
+  window.removeJugador = function(nombre) {
     if(!confirm('¿Eliminar a ' + nombre + ' de la plantilla?')) return;
     state.jugadores = state.jugadores.filter(j => j !== nombre);
     save();
     renderJugadores();
     renderGolesForm();
-  }
+  };
 
   function renderJugadores() {
     const el = document.getElementById('lista-jugadores');
@@ -699,13 +707,13 @@
     `).join('');
   }
 
-  function changeGol(jugador, delta) {
+  window.changeGol = function(jugador, delta) {
     golesJugadores[jugador] = Math.max(0, (golesJugadores[jugador]||0) + delta);
     document.getElementById('gol-' + jugador.replace(/\s/g,'_')).textContent = golesJugadores[jugador];
-  }
+  };
 
   // Guardar partido
-  function guardarPartido() {
+  window.guardarPartido = function() {
     const fecha = document.getElementById('fecha-partido').value.trim();
     if(!fecha) { toast('⚠️ Pon la fecha del partido'); return; }
     if(!resultadoSel) { toast('⚠️ Selecciona el resultado'); return; }
@@ -721,31 +729,28 @@
       goles: { ...golesJugadores }
     };
 
+    if(!state.partidos) state.partidos = [];
     state.partidos.unshift(partido);
     save();
 
-    // Reset
     selRes(null);
     document.getElementById('goles-nosotros').value = 0;
     document.getElementById('goles-ellos').value = 0;
     renderGolesForm();
-
     toast('🎉 Partido guardado');
-  }
+  };
 
   // Historial
   function renderHistorial() {
     const el = document.getElementById('lista-historial');
-    if(!state.partidos.length) {
+    if(!state.partidos || !state.partidos.length) {
       el.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Todavía no hay partidos registrados</div>';
       return;
     }
-
     el.innerHTML = state.partidos.map(p => {
       const badgeClass = p.resultado === 'victoria' ? 'badge-victoria' : p.resultado === 'empate' ? 'badge-empate' : 'badge-derrota';
       const badgeText = p.resultado === 'victoria' ? '🏆 VICTORIA' : p.resultado === 'empate' ? '🤝 EMPATE' : '💀 DERROTA';
       const goleadores = Object.entries(p.goles || {}).filter(([_,g]) => g > 0).map(([j,g]) => `<span class="gol-badge">⚽ ${j}: ${g}</span>`).join('');
-
       return `
       <div class="partido-card">
         <div class="partido-header">
@@ -755,22 +760,21 @@
         </div>
         <div class="marcador">${p.marcador.nosotros} — ${p.marcador.ellos}</div>
         ${goleadores ? `<div class="goleadores-partido">${goleadores}</div>` : ''}
-      </div>
-      `;
+      </div>`;
     }).join('');
   }
 
-  function borrarPartido(id) {
+  window.borrarPartido = function(id) {
     if(!confirm('¿Borrar este partido?')) return;
     state.partidos = state.partidos.filter(p => p.id !== id);
     save();
     renderHistorial();
     toast('Partido eliminado');
-  }
+  };
 
   // Estadísticas
   function renderEstadisticas() {
-    const partidos = state.partidos;
+    const partidos = state.partidos || [];
     const victorias = partidos.filter(p => p.resultado === 'victoria').length;
     const empates = partidos.filter(p => p.resultado === 'empate').length;
     const derrotas = partidos.filter(p => p.resultado === 'derrota').length;
@@ -786,23 +790,18 @@
       <div class="resumen-item"><div class="resumen-num" style="color:#f87171">${encajados}</div><div class="resumen-label">Goles en contra</div></div>
     `;
 
-    // Tabla goleadores
     const stats = {};
-    state.jugadores.forEach(j => stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 });
-
+    (state.jugadores || []).forEach(j => stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 });
     partidos.forEach(p => {
       Object.entries(p.goles || {}).forEach(([j, g]) => {
         if(!stats[j]) stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 };
-        if(g > 0 || true) {
-          stats[j].partidos++;
-          stats[j].goles += g;
-          stats[j][p.resultado + 's']++;
-        }
+        stats[j].partidos++;
+        stats[j].goles += g;
+        stats[j][p.resultado + 's']++;
       });
     });
 
     const sorted = Object.entries(stats).sort((a,b) => b[1].goles - a[1].goles);
-
     const el = document.getElementById('tabla-stats');
     if(!sorted.length || sorted.every(([_,s]) => s.partidos === 0)) {
       el.innerHTML = '<div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div>';
@@ -813,13 +812,8 @@
       <table class="stats-table">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Jugador</th>
-            <th>PJ</th>
-            <th>⚽ Goles</th>
-            <th style="color:#4ade80">V</th>
-            <th style="color:var(--amarillo)">E</th>
-            <th style="color:#f87171">D</th>
+            <th>#</th><th>Jugador</th><th>PJ</th><th>⚽ Goles</th>
+            <th style="color:#4ade80">V</th><th style="color:var(--amarillo)">E</th><th style="color:#f87171">D</th>
           </tr>
         </thead>
         <tbody>
@@ -838,6 +832,44 @@
       </table>
     `;
   }
+
+  // Escuchar cambios en tiempo real desde Firebase
+  onValue(ref(db, 'pachanga'), (snapshot) => {
+    const data = snapshot.val();
+    if(data) {
+      state = {
+        jugadores: data.jugadores || [],
+        partidos: data.partidos || []
+      };
+    } else {
+      state = { jugadores: [], partidos: [] };
+    }
+
+    // Ocultar loading la primera vez
+    const overlay = document.getElementById('loading-overlay');
+    if(overlay) overlay.style.display = 'none';
+
+    setSyncStatus('ok', '✓ Sincronizado');
+
+    // Refrescar la pestaña activa
+    const tabActiva = document.querySelector('.tab.active');
+    const tabs = ['nuevo','historial','estadisticas','jugadores'];
+    const idx = Array.from(document.querySelectorAll('.tab')).indexOf(tabActiva);
+    const tab = tabs[idx];
+    if(tab === 'historial') renderHistorial();
+    if(tab === 'estadisticas') renderEstadisticas();
+    if(tab === 'jugadores') renderJugadores();
+    if(tab === 'nuevo') renderGolesForm();
+  }, (error) => {
+    document.getElementById('loading-overlay').style.display = 'none';
+    setSyncStatus('error', '✗ Sin conexión');
+    toast('❌ Error al conectar con Firebase');
+  });
+
+  // Fecha auto
+  const hoy = new Date();
+  document.getElementById('fecha-partido').value = hoy.toLocaleDateString('es-ES', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
+
 </script>
 </body>
 </html>
