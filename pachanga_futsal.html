@@ -16,6 +16,10 @@
     --fondo: #0a1a0e;
     --tarjeta: #111f15;
     --borde: #1e3525;
+    --rojo: #c0392b;
+    --rojo-oscuro: #7a1a1a;
+    --azul: #1a5fa0;
+    --azul-oscuro: #0d3a6b;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +44,6 @@
 
   .container { max-width: 960px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
 
-  /* Loading overlay */
   #loading-overlay {
     position: fixed;
     inset: 0;
@@ -52,159 +55,54 @@
     z-index: 9999;
     gap: 16px;
   }
-
-  #loading-overlay h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    color: var(--amarillo);
-    letter-spacing: 3px;
-  }
-
-  #loading-overlay p {
-    font-family: 'Barlow Condensed', sans-serif;
-    color: var(--gris);
-    font-size: 14px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  #loading-overlay h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--amarillo); letter-spacing: 3px; }
+  #loading-overlay p { font-family: 'Barlow Condensed', sans-serif; color: var(--gris); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
 
   .spinner {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border: 3px solid var(--borde);
     border-top-color: var(--verde-claro);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Sync indicator */
   #sync-status {
-    position: fixed;
-    top: 12px;
-    right: 12px;
+    position: fixed; top: 12px; right: 12px;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 5px;
-    z-index: 100;
-    transition: all 0.3s;
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 5px; z-index: 100; transition: all 0.3s;
   }
-
-  .sync-ok { background: var(--verde-oscuro); color: #4ade80; border: 1px solid var(--verde); }
-  .sync-saving { background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
+  .sync-ok    { background: var(--verde-oscuro); color: #4ade80; border: 1px solid var(--verde); }
+  .sync-saving{ background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
   .sync-error { background: #1a0d0d; color: #f87171; border: 1px solid #5a1010; }
 
-  header {
-    text-align: center;
-    padding: 40px 0 30px;
-    border-bottom: 2px solid var(--borde);
-    margin-bottom: 32px;
-  }
+  header { text-align: center; padding: 40px 0 30px; border-bottom: 2px solid var(--borde); margin-bottom: 32px; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 64px; letter-spacing: 4px; color: var(--amarillo); text-shadow: 0 0 40px rgba(245,197,24,0.3); line-height: 1; }
+  header p { font-family: 'Barlow Condensed', sans-serif; color: var(--gris); font-size: 16px; letter-spacing: 3px; text-transform: uppercase; margin-top: 6px; }
 
-  header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 64px;
-    letter-spacing: 4px;
-    color: var(--amarillo);
-    text-shadow: 0 0 40px rgba(245,197,24,0.3);
-    line-height: 1;
-  }
-
-  header p {
-    font-family: 'Barlow Condensed', sans-serif;
-    color: var(--gris);
-    font-size: 16px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
-
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 28px;
-  }
-
-  .tab {
-    flex: 1;
-    padding: 10px;
-    background: none;
-    border: none;
-    color: var(--gris);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 7px;
-    transition: all 0.2s;
-  }
-
+  .tabs { display: flex; gap: 4px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+  .tab { flex: 1; padding: 10px; background: none; border: none; color: var(--gris); font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 7px; transition: all 0.2s; }
   .tab.active { background: var(--verde); color: white; }
   .tab:hover:not(.active) { color: var(--blanco); background: var(--borde); }
 
   .panel { display: none; }
   .panel.active { display: block; }
 
-  .card {
-    background: var(--tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
-  }
-
-  .card h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    letter-spacing: 2px;
-    color: var(--amarillo);
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .card { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--amarillo); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
 
   .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
   input[type="text"], input[type="number"], select {
-    background: var(--fondo);
-    border: 1px solid var(--borde);
-    color: var(--blanco);
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-family: 'Barlow', sans-serif;
-    font-size: 15px;
-    flex: 1;
-    min-width: 140px;
-    transition: border-color 0.2s;
+    background: var(--fondo); border: 1px solid var(--borde); color: var(--blanco);
+    padding: 10px 14px; border-radius: 8px; font-family: 'Barlow', sans-serif;
+    font-size: 15px; flex: 1; min-width: 140px; transition: border-color 0.2s;
   }
-
   input:focus, select:focus { outline: none; border-color: var(--verde-claro); }
   select option { background: var(--fondo); }
 
-  .btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
+  .btn { padding: 10px 20px; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-verde { background: var(--verde); color: white; }
   .btn-verde:hover { background: var(--verde-claro); }
   .btn-amarillo { background: var(--amarillo); color: var(--fondo); }
@@ -212,257 +110,123 @@
   .btn-rojo { background: #7a1a1a; color: white; font-size: 12px; padding: 5px 10px; }
   .btn-rojo:hover { background: #a02020; }
 
-  .jugadores-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  /* Equipos */
+  .equipos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 600px) { .equipos-grid { grid-template-columns: 1fr; } }
 
-  .jugador-chip {
-    background: var(--verde-oscuro);
-    border: 1px solid var(--verde);
-    border-radius: 6px;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
+  .equipo-box { border-radius: 10px; padding: 16px; border: 2px solid; }
+  .equipo-box.rojo { background: rgba(192,57,43,0.08); border-color: var(--rojo); }
+  .equipo-box.azul { background: rgba(26,95,160,0.08); border-color: var(--azul); }
+
+  .equipo-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; margin-bottom: 6px; }
+  .equipo-titulo.rojo { color: #f87171; }
+  .equipo-titulo.azul { color: #60a5fa; }
+
+  .equipo-count { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .equipo-count.rojo { color: #f87171; }
+  .equipo-count.azul { color: #60a5fa; }
+
+  .chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; }
+
+  .chip {
+    border-radius: 6px; padding: 5px 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 1px solid; transition: all 0.15s; user-select: none;
   }
+  .chip.libre { background: var(--verde-oscuro); border-color: var(--verde); color: #a0d4b0; }
+  .chip.libre:hover { background: var(--verde); color: white; }
+  .chip.en-rojo { background: rgba(192,57,43,0.2); border-color: var(--rojo); color: #f87171; }
+  .chip.en-rojo:hover { background: var(--rojo); color: white; }
+  .chip.en-azul { background: rgba(26,95,160,0.2); border-color: var(--azul); color: #60a5fa; }
+  .chip.en-azul:hover { background: var(--azul); color: white; }
 
-  .jugador-chip button {
-    background: none;
-    border: none;
-    color: var(--gris);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0;
-  }
-  .jugador-chip button:hover { color: #ff6b6b; }
+  .aviso { background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--amarillo); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px; margin-top: 12px; }
 
-  .goles-jugadores {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
-    margin-top: 14px;
-  }
+  /* Marcador */
+  .marcador-inputs { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .marcador-inputs label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .label-rojo { color: #f87171; }
+  .label-azul { color: #60a5fa; }
+  .marcador-inputs input[type="number"] { width: 70px; min-width: 70px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; padding: 6px 10px; }
+  .vs-sep { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gris); margin-top: 20px; }
 
-  .gol-item {
-    background: var(--fondo);
-    border: 1px solid var(--borde);
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
+  /* Goles por jugador */
+  .goles-seccion-titulo { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 14px 0 8px; padding: 6px 10px; border-radius: 6px; }
+  .goles-seccion-titulo.rojo { background: rgba(192,57,43,0.12); color: #f87171; border-left: 3px solid var(--rojo); }
+  .goles-seccion-titulo.azul { background: rgba(26,95,160,0.12); color: #60a5fa; border-left: 3px solid var(--azul); }
 
+  .goles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 6px; }
+
+  .gol-item { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .gol-item.rojo { border-color: rgba(192,57,43,0.35); }
+  .gol-item.azul { border-color: rgba(26,95,160,0.35); }
   .gol-item span { font-size: 14px; font-weight: 600; flex: 1; }
 
   .gol-counter { display: flex; align-items: center; gap: 6px; }
-
-  .gol-counter button {
-    background: var(--borde);
-    border: none;
-    color: white;
-    width: 26px;
-    height: 26px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-  }
-
+  .gol-counter button { background: var(--borde); border: none; color: white; width: 26px; height: 26px; border-radius: 5px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
   .gol-counter button:hover { background: var(--verde); }
-  .gol-counter .num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    min-width: 24px;
-    text-align: center;
-    color: var(--amarillo);
-  }
+  .gol-counter .num { font-family: 'Bebas Neue', sans-serif; font-size: 22px; min-width: 24px; text-align: center; color: var(--amarillo); }
 
-  .partido-card {
-    background: var(--fondo);
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 12px;
-    position: relative;
-  }
+  /* Historial */
+  .partido-card { background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .partido-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .partido-fecha { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--gris); text-transform: uppercase; }
 
-  .partido-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  .marcador-hist { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; }
+  .marcador-equipo { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .marcador-equipo-nombre { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  .marcador-equipo-nombre.rojo { color: #f87171; }
+  .marcador-equipo-nombre.azul { color: #60a5fa; }
+  .marcador-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; }
+  .marcador-num.rojo { color: #f87171; }
+  .marcador-num.azul { color: #60a5fa; }
+  .marcador-sep-hist { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gris); margin-top: 18px; }
 
-  .partido-fecha {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 1px;
-    color: var(--gris);
-    text-transform: uppercase;
-  }
+  .ganador-badge { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; padding: 3px 10px; border-radius: 4px; }
+  .ganador-badge.rojo { background: rgba(192,57,43,0.25); color: #f87171; border: 1px solid var(--rojo); }
+  .ganador-badge.azul { background: rgba(26,95,160,0.25); color: #60a5fa; border: 1px solid var(--azul); }
+  .ganador-badge.empate { background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
 
-  .resultado-badge {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    padding: 3px 12px;
-    border-radius: 5px;
-  }
+  .goleadores-hist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  @media (max-width: 500px) { .goleadores-hist { grid-template-columns: 1fr; } }
+  .goleadores-col-titulo { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+  .goleadores-col-titulo.rojo { color: #f87171; }
+  .goleadores-col-titulo.azul { color: #60a5fa; }
+  .gol-badge { font-size: 12px; font-weight: 600; border-radius: 4px; padding: 2px 8px; display: inline-block; margin: 2px 0; }
+  .gol-badge.rojo { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3); color: #f87171; }
+  .gol-badge.azul { background: rgba(26,95,160,0.12); border: 1px solid rgba(26,95,160,0.3); color: #60a5fa; }
 
-  .badge-victoria { background: var(--verde-oscuro); color: #4ade80; border: 1px solid var(--verde); }
-  .badge-empate { background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
-  .badge-derrota { background: #1a0d0d; color: #f87171; border: 1px solid #5a1010; }
-
-  .marcador {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 3px;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  .goleadores-partido { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-
-  .gol-badge {
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--verde-oscuro);
-    border: 1px solid var(--borde);
-    border-radius: 4px;
-    padding: 2px 8px;
-    color: #a0d4b0;
-  }
+  /* Stats */
+  .resumen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .resumen-item { background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; text-align: center; }
+  .resumen-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--amarillo); }
+  .resumen-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); margin-top: 4px; }
 
   .stats-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-
-  .stats-table th {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--gris);
-    padding: 10px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--borde);
-  }
-
+  .stats-table th { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--borde); }
   .stats-table td { padding: 11px 12px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
   .stats-table tr:last-child td { border-bottom: none; }
   .stats-table tr:hover td { background: rgba(255,255,255,0.03); }
-
   .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gris); width: 30px; }
   .rank-1 { color: var(--amarillo); }
   .rank-2 { color: #c0c0c0; }
   .rank-3 { color: #cd7f32; }
-
   .nombre-cell { font-weight: 700; font-size: 15px; }
-
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--blanco); }
   .stat-verde { color: #4ade80; }
   .stat-amarillo { color: var(--amarillo); }
   .stat-rojo { color: #f87171; }
 
-  .resumen-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+  /* Plantilla jugadores */
+  .jugadores-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .jugador-chip-plantilla { background: var(--verde-oscuro); border: 1px solid var(--verde); border-radius: 6px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .jugador-chip-plantilla button { background: none; border: none; color: var(--gris); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
+  .jugador-chip-plantilla button:hover { color: #ff6b6b; }
 
-  .resumen-item {
-    background: var(--fondo);
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
-  }
-
-  .resumen-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--amarillo); }
-  .resumen-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); margin-top: 4px; }
-
-  .resultado-selector { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-
-  .res-btn {
-    flex: 1;
-    min-width: 90px;
-    padding: 10px;
-    border: 2px solid var(--borde);
-    background: var(--fondo);
-    color: var(--gris);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-
-  .res-btn.sel-victoria { border-color: var(--verde); background: var(--verde-oscuro); color: #4ade80; }
-  .res-btn.sel-empate { border-color: #5a5010; background: #1a1a0d; color: var(--amarillo); }
-  .res-btn.sel-derrota { border-color: #5a1010; background: #1a0d0d; color: #f87171; }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--gris);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
+  .empty-state { text-align: center; padding: 40px; color: var(--gris); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
   .empty-state .icon { font-size: 40px; display: block; margin-bottom: 10px; }
 
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--verde);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--verde); color: white; padding: 12px 24px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; z-index: 1000; transition: transform 0.3s ease; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
-  .marcador-inputs { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-
-  .marcador-inputs label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--gris);
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .marcador-inputs input[type="number"] {
-    width: 70px;
-    min-width: 70px;
-    text-align: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    padding: 6px 10px;
-  }
-
-  .vs-sep { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gris); margin-top: 20px; }
 
   @media (max-width: 600px) {
     header h1 { font-size: 44px; }
@@ -473,14 +237,12 @@
 </head>
 <body>
 
-<!-- Loading overlay -->
 <div id="loading-overlay">
   <div class="spinner"></div>
   <h2>⚽ La Pachanga</h2>
   <p>Conectando con Firebase...</p>
 </div>
 
-<!-- Sync status -->
 <div id="sync-status" class="sync-ok" style="display:none">✓ Sincronizado</div>
 
 <div class="container">
@@ -498,40 +260,57 @@
 
   <!-- TAB: NUEVO PARTIDO -->
   <div class="panel active" id="panel-nuevo">
+
     <div class="card">
-      <h2>⚽ Registrar Partido</h2>
-      <div class="form-row">
-        <div style="flex:1; min-width:160px">
-          <label style="font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--gris); display:block; margin-bottom:6px">Fecha del partido</label>
-          <input type="text" id="fecha-partido" placeholder="Viernes dd/mm/aaaa">
+      <h2>📅 Fecha</h2>
+      <input type="text" id="fecha-partido" placeholder="Viernes dd/mm/aaaa" style="max-width:300px">
+    </div>
+
+    <div class="card">
+      <h2>👕 Formar Equipos</h2>
+      <p style="color:var(--gris); font-size:13px; margin-bottom:14px">
+        Toca un jugador para añadirlo al Equipo Rojo. Si ya está en Rojo, pasa a Azul. Si está en Azul, lo quitas.
+      </p>
+
+      <div style="margin-bottom:14px">
+        <div style="font-family:'Barlow Condensed',sans-serif; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin-bottom:8px">Sin asignar</div>
+        <div class="chips-wrap" id="chips-libres"></div>
+      </div>
+
+      <div class="equipos-grid">
+        <div class="equipo-box rojo">
+          <div class="equipo-titulo rojo">🔴 Equipo Rojo</div>
+          <div class="equipo-count rojo" id="count-rojo">0 / 5 jugadores</div>
+          <div class="chips-wrap" id="chips-rojo"></div>
+        </div>
+        <div class="equipo-box azul">
+          <div class="equipo-titulo azul">🔵 Equipo Azul</div>
+          <div class="equipo-count azul" id="count-azul">0 / 5 jugadores</div>
+          <div class="chips-wrap" id="chips-azul"></div>
         </div>
       </div>
-      <div style="margin-top:18px">
-        <label style="font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--gris); display:block; margin-bottom:6px">Resultado</label>
-        <div class="resultado-selector">
-          <button class="res-btn" id="btn-victoria" onclick="selRes('victoria')">🏆 Victoria</button>
-          <button class="res-btn" id="btn-empate" onclick="selRes('empate')">🤝 Empate</button>
-          <button class="res-btn" id="btn-derrota" onclick="selRes('derrota')">💀 Derrota</button>
-        </div>
-      </div>
+      <div id="aviso-equipos"></div>
+    </div>
+
+    <div class="card">
+      <h2>⚽ Marcador Final</h2>
       <div class="marcador-inputs">
         <div>
-          <label>Nosotros</label>
-          <input type="number" id="goles-nosotros" value="0" min="0">
+          <label class="label-rojo">🔴 Equipo Rojo</label>
+          <input type="number" id="goles-rojo" value="0" min="0">
         </div>
         <div class="vs-sep">–</div>
         <div>
-          <label>Ellos</label>
-          <input type="number" id="goles-ellos" value="0" min="0">
+          <label class="label-azul">🔵 Equipo Azul</label>
+          <input type="number" id="goles-azul" value="0" min="0">
         </div>
       </div>
     </div>
 
     <div class="card">
-      <h2>👟 Goles por Jugador</h2>
-      <p style="color:var(--gris); font-size:14px; margin-bottom:4px">Anota cuántos goles marcó cada uno</p>
-      <div class="goles-jugadores" id="goles-jugadores">
-        <div class="empty-state"><span class="icon">👤</span>Añade jugadores primero en la pestaña Jugadores</div>
+      <h2>🥅 Goles por Jugador</h2>
+      <div id="goles-por-jugador">
+        <div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div>
       </div>
     </div>
 
@@ -578,12 +357,10 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // Configuración Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyCLt6S1OIOGeNwjHiaoGCkxcMiis9h6TGo",
     authDomain: "pachanga-6518c.firebaseapp.com",
@@ -595,14 +372,17 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  const db  = getDatabase(app);
 
-  // Estado en memoria
   let state = { jugadores: [], partidos: [] };
-  let resultadoSel = null;
+
+  // Estado local del formulario de nuevo partido
+  let equipoRojo = [];
+  let equipoAzul = [];
   let golesJugadores = {};
 
-  // Indicador de sync
+  // ── UTILIDADES ────────────────────────────────────────
+
   function setSyncStatus(status, msg) {
     const el = document.getElementById('sync-status');
     el.style.display = 'block';
@@ -610,7 +390,6 @@
     el.textContent = msg;
   }
 
-  // Guardar en Firebase
   async function save() {
     setSyncStatus('saving', '⏳ Guardando...');
     try {
@@ -618,11 +397,10 @@
       setSyncStatus('ok', '✓ Sincronizado');
     } catch(e) {
       setSyncStatus('error', '✗ Error al guardar');
-      toast('❌ Error al guardar en Firebase');
+      toast('❌ Error al guardar');
     }
   }
 
-  // Toast
   function toast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -630,136 +408,229 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  // Tabs
+  // ── TABS ──────────────────────────────────────────────
+
   window.setTab = function(tab) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById('panel-' + tab).classList.add('active');
     document.querySelectorAll('.tab')[['nuevo','historial','estadisticas','jugadores'].indexOf(tab)].classList.add('active');
-    if(tab === 'historial') renderHistorial();
+    if(tab === 'historial')    renderHistorial();
     if(tab === 'estadisticas') renderEstadisticas();
-    if(tab === 'jugadores') renderJugadores();
-    if(tab === 'nuevo') renderGolesForm();
+    if(tab === 'jugadores')    renderJugadores();
+    if(tab === 'nuevo')        renderFormEquipos();
   };
 
-  // Resultado
-  window.selRes = function(r) {
-    resultadoSel = r;
-    document.getElementById('btn-victoria').className = 'res-btn' + (r==='victoria' ? ' sel-victoria' : '');
-    document.getElementById('btn-empate').className = 'res-btn' + (r==='empate' ? ' sel-empate' : '');
-    document.getElementById('btn-derrota').className = 'res-btn' + (r==='derrota' ? ' sel-derrota' : '');
-  };
+  // ── FORMAR EQUIPOS ────────────────────────────────────
 
-  // Jugadores
-  window.addJugador = function() {
-    const inp = document.getElementById('nuevo-jugador');
-    const nombre = inp.value.trim();
-    if(!nombre) return;
-    if(state.jugadores.includes(nombre)) { toast('⚠️ Ya existe ese jugador'); return; }
-    state.jugadores.push(nombre);
-    save();
-    inp.value = '';
-    renderJugadores();
-    renderGolesForm();
-    toast('✅ ' + nombre + ' añadido');
-  };
+  function renderFormEquipos() {
+    const todos = state.jugadores || [];
 
-  window.removeJugador = function(nombre) {
-    if(!confirm('¿Eliminar a ' + nombre + ' de la plantilla?')) return;
-    state.jugadores = state.jugadores.filter(j => j !== nombre);
-    save();
-    renderJugadores();
-    renderGolesForm();
-  };
+    // Chips libres
+    const libres = todos.filter(j => !equipoRojo.includes(j) && !equipoAzul.includes(j));
+    const elLibres = document.getElementById('chips-libres');
+    elLibres.innerHTML = libres.length
+      ? libres.map(j => `<span class="chip libre" onclick="toggleJugador('${j}')">${j}</span>`).join('')
+      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Todos asignados ✓</span>`;
 
-  function renderJugadores() {
-    const el = document.getElementById('lista-jugadores');
-    if(!state.jugadores.length) {
-      el.innerHTML = '<div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div>';
-      return;
+    // Chips rojo
+    const elRojo = document.getElementById('chips-rojo');
+    elRojo.innerHTML = equipoRojo.length
+      ? equipoRojo.map(j => `<span class="chip en-rojo" onclick="toggleJugador('${j}')">✕ ${j}</span>`).join('')
+      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
+
+    // Chips azul
+    const elAzul = document.getElementById('chips-azul');
+    elAzul.innerHTML = equipoAzul.length
+      ? equipoAzul.map(j => `<span class="chip en-azul" onclick="toggleJugador('${j}')">✕ ${j}</span>`).join('')
+      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
+
+    document.getElementById('count-rojo').textContent = equipoRojo.length + ' / 5 jugadores';
+    document.getElementById('count-azul').textContent = equipoAzul.length + ' / 5 jugadores';
+
+    // Aviso equipos completos
+    const aviso = document.getElementById('aviso-equipos');
+    if(equipoRojo.length === 5 && equipoAzul.length === 5) {
+      aviso.innerHTML = '<div class="aviso">✅ Equipos completos — anota el marcador y los goles abajo</div>';
+    } else {
+      aviso.innerHTML = '';
     }
-    el.innerHTML = state.jugadores.map(j => `
-      <div class="jugador-chip">
-        <span>⚽ ${j}</span>
-        <button onclick="removeJugador('${j}')" title="Eliminar">×</button>
-      </div>
-    `).join('');
+
+    renderGolesForm();
   }
 
-  // Form goles
+  // Ciclo: libre → rojo → azul → libre
+  window.toggleJugador = function(nombre) {
+    if(equipoRojo.includes(nombre)) {
+      // Rojo → Azul
+      equipoRojo = equipoRojo.filter(j => j !== nombre);
+      if(equipoAzul.length < 5) {
+        equipoAzul.push(nombre);
+      } else {
+        toast('⚠️ El Equipo Azul ya tiene 5 jugadores');
+      }
+    } else if(equipoAzul.includes(nombre)) {
+      // Azul → libre
+      equipoAzul = equipoAzul.filter(j => j !== nombre);
+    } else {
+      // Libre → Rojo
+      if(equipoRojo.length < 5) {
+        equipoRojo.push(nombre);
+      } else if(equipoAzul.length < 5) {
+        equipoAzul.push(nombre);
+      } else {
+        toast('⚠️ Los dos equipos ya están completos');
+        return;
+      }
+    }
+    renderFormEquipos();
+  };
+
+  // ── GOLES POR JUGADOR ─────────────────────────────────
+
   function renderGolesForm() {
-    const el = document.getElementById('goles-jugadores');
-    if(!state.jugadores.length) {
-      el.innerHTML = '<div class="empty-state"><span class="icon">👤</span>Añade jugadores en la pestaña Jugadores</div>';
+    const el = document.getElementById('goles-por-jugador');
+    if(!equipoRojo.length && !equipoAzul.length) {
+      el.innerHTML = '<div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div>';
       return;
     }
-    golesJugadores = {};
-    state.jugadores.forEach(j => golesJugadores[j] = 0);
-    el.innerHTML = state.jugadores.map(j => `
-      <div class="gol-item">
+
+    // Inicializar solo jugadores nuevos
+    [...equipoRojo, ...equipoAzul].forEach(j => {
+      if(golesJugadores[j] === undefined) golesJugadores[j] = 0;
+    });
+
+    let html = '';
+
+    if(equipoRojo.length) {
+      html += '<div class="goles-seccion-titulo rojo">🔴 Equipo Rojo</div>';
+      html += '<div class="goles-grid">';
+      html += equipoRojo.map(j => golesItemHTML(j, 'rojo')).join('');
+      html += '</div>';
+    }
+
+    if(equipoAzul.length) {
+      html += '<div class="goles-seccion-titulo azul">🔵 Equipo Azul</div>';
+      html += '<div class="goles-grid">';
+      html += equipoAzul.map(j => golesItemHTML(j, 'azul')).join('');
+      html += '</div>';
+    }
+
+    el.innerHTML = html;
+  }
+
+  function golesItemHTML(j, equipo) {
+    const id = 'gol-' + j.replace(/\s/g, '_');
+    return `
+      <div class="gol-item ${equipo}">
         <span>${j}</span>
         <div class="gol-counter">
           <button onclick="changeGol('${j}',-1)">−</button>
-          <span class="num" id="gol-${j.replace(/\s/g,'_')}">0</span>
+          <span class="num" id="${id}">${golesJugadores[j] || 0}</span>
           <button onclick="changeGol('${j}',1)">+</button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
   }
 
   window.changeGol = function(jugador, delta) {
-    golesJugadores[jugador] = Math.max(0, (golesJugadores[jugador]||0) + delta);
-    document.getElementById('gol-' + jugador.replace(/\s/g,'_')).textContent = golesJugadores[jugador];
+    golesJugadores[jugador] = Math.max(0, (golesJugadores[jugador] || 0) + delta);
+    document.getElementById('gol-' + jugador.replace(/\s/g, '_')).textContent = golesJugadores[jugador];
   };
 
-  // Guardar partido
+  // ── GUARDAR PARTIDO ───────────────────────────────────
+
   window.guardarPartido = function() {
     const fecha = document.getElementById('fecha-partido').value.trim();
     if(!fecha) { toast('⚠️ Pon la fecha del partido'); return; }
-    if(!resultadoSel) { toast('⚠️ Selecciona el resultado'); return; }
+    if(!equipoRojo.length || !equipoAzul.length) { toast('⚠️ Forma los dos equipos'); return; }
 
-    const nosotros = parseInt(document.getElementById('goles-nosotros').value) || 0;
-    const ellos = parseInt(document.getElementById('goles-ellos').value) || 0;
+    const golesR = parseInt(document.getElementById('goles-rojo').value) || 0;
+    const golesA = parseInt(document.getElementById('goles-azul').value) || 0;
+
+    const resRojo = golesR > golesA ? 'victoria' : golesR < golesA ? 'derrota' : 'empate';
+    const resAzul = golesA > golesR ? 'victoria' : golesA < golesR ? 'derrota' : 'empate';
+
+    const goles = {};
+    equipoRojo.forEach(j => { goles[j] = { goles: golesJugadores[j] || 0, equipo: 'rojo', resultado: resRojo }; });
+    equipoAzul.forEach(j => { goles[j] = { goles: golesJugadores[j] || 0, equipo: 'azul', resultado: resAzul }; });
 
     const partido = {
       id: Date.now(),
       fecha,
-      resultado: resultadoSel,
-      marcador: { nosotros, ellos },
-      goles: { ...golesJugadores }
+      marcador: { rojo: golesR, azul: golesA },
+      equipoRojo: [...equipoRojo],
+      equipoAzul: [...equipoAzul],
+      goles
     };
 
     if(!state.partidos) state.partidos = [];
     state.partidos.unshift(partido);
     save();
 
-    selRes(null);
-    document.getElementById('goles-nosotros').value = 0;
-    document.getElementById('goles-ellos').value = 0;
-    renderGolesForm();
+    // Reset formulario
+    equipoRojo = [];
+    equipoAzul = [];
+    golesJugadores = {};
+    document.getElementById('goles-rojo').value = 0;
+    document.getElementById('goles-azul').value = 0;
+    renderFormEquipos();
     toast('🎉 Partido guardado');
   };
 
-  // Historial
+  // ── HISTORIAL ─────────────────────────────────────────
+
   function renderHistorial() {
     const el = document.getElementById('lista-historial');
     if(!state.partidos || !state.partidos.length) {
       el.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Todavía no hay partidos registrados</div>';
       return;
     }
+
     el.innerHTML = state.partidos.map(p => {
-      const badgeClass = p.resultado === 'victoria' ? 'badge-victoria' : p.resultado === 'empate' ? 'badge-empate' : 'badge-derrota';
-      const badgeText = p.resultado === 'victoria' ? '🏆 VICTORIA' : p.resultado === 'empate' ? '🤝 EMPATE' : '💀 DERROTA';
-      const goleadores = Object.entries(p.goles || {}).filter(([_,g]) => g > 0).map(([j,g]) => `<span class="gol-badge">⚽ ${j}: ${g}</span>`).join('');
+      const gr = p.marcador.rojo;
+      const ga = p.marcador.azul;
+
+      let ganadorBadge;
+      if(gr > ga)      ganadorBadge = '<span class="ganador-badge rojo">🔴 Gana Rojo</span>';
+      else if(ga > gr) ganadorBadge = '<span class="ganador-badge azul">🔵 Gana Azul</span>';
+      else             ganadorBadge = '<span class="ganador-badge empate">🤝 Empate</span>';
+
+      const goleadoresRojo = Object.entries(p.goles || {})
+        .filter(([_, v]) => v.equipo === 'rojo' && v.goles > 0)
+        .map(([j, v]) => `<span class="gol-badge rojo">⚽ ${j}: ${v.goles}</span>`).join('');
+
+      const goleadoresAzul = Object.entries(p.goles || {})
+        .filter(([_, v]) => v.equipo === 'azul' && v.goles > 0)
+        .map(([j, v]) => `<span class="gol-badge azul">⚽ ${j}: ${v.goles}</span>`).join('');
+
       return `
       <div class="partido-card">
         <div class="partido-header">
           <span class="partido-fecha">📅 ${p.fecha}</span>
-          <span class="resultado-badge ${badgeClass}">${badgeText}</span>
+          ${ganadorBadge}
           <button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑 Borrar</button>
         </div>
-        <div class="marcador">${p.marcador.nosotros} — ${p.marcador.ellos}</div>
-        ${goleadores ? `<div class="goleadores-partido">${goleadores}</div>` : ''}
+        <div class="marcador-hist">
+          <div class="marcador-equipo">
+            <div class="marcador-equipo-nombre rojo">🔴 Rojo</div>
+            <div class="marcador-num rojo">${gr}</div>
+          </div>
+          <div class="marcador-sep-hist">–</div>
+          <div class="marcador-equipo">
+            <div class="marcador-equipo-nombre azul">🔵 Azul</div>
+            <div class="marcador-num azul">${ga}</div>
+          </div>
+        </div>
+        <div class="goleadores-hist">
+          <div>
+            <div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>
+            ${goleadoresRojo || '<span style="color:var(--gris);font-size:12px">Sin goles</span>'}
+          </div>
+          <div>
+            <div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>
+            ${goleadoresAzul || '<span style="color:var(--gris);font-size:12px">Sin goles</span>'}
+          </div>
+        </div>
       </div>`;
     }).join('');
   }
@@ -772,38 +643,42 @@
     toast('Partido eliminado');
   };
 
-  // Estadísticas
+  // ── ESTADÍSTICAS ──────────────────────────────────────
+
   function renderEstadisticas() {
     const partidos = state.partidos || [];
-    const victorias = partidos.filter(p => p.resultado === 'victoria').length;
-    const empates = partidos.filter(p => p.resultado === 'empate').length;
-    const derrotas = partidos.filter(p => p.resultado === 'derrota').length;
-    const golesTotal = partidos.reduce((a, p) => a + (p.marcador?.nosotros || 0), 0);
-    const encajados = partidos.reduce((a, p) => a + (p.marcador?.ellos || 0), 0);
+    const conGanador = partidos.filter(p => p.marcador.rojo !== p.marcador.azul).length;
+    const empates    = partidos.filter(p => p.marcador.rojo === p.marcador.azul).length;
+    const golesTotal = partidos.reduce((a, p) => a + p.marcador.rojo + p.marcador.azul, 0);
 
     document.getElementById('resumen-global').innerHTML = `
       <div class="resumen-item"><div class="resumen-num">${partidos.length}</div><div class="resumen-label">Partidos</div></div>
-      <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${victorias}</div><div class="resumen-label">Victorias</div></div>
+      <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conGanador}</div><div class="resumen-label">Con ganador</div></div>
       <div class="resumen-item"><div class="resumen-num" style="color:var(--amarillo)">${empates}</div><div class="resumen-label">Empates</div></div>
-      <div class="resumen-item"><div class="resumen-num" style="color:#f87171">${derrotas}</div><div class="resumen-label">Derrotas</div></div>
-      <div class="resumen-item"><div class="resumen-num">${golesTotal}</div><div class="resumen-label">Goles a favor</div></div>
-      <div class="resumen-item"><div class="resumen-num" style="color:#f87171">${encajados}</div><div class="resumen-label">Goles en contra</div></div>
+      <div class="resumen-item"><div class="resumen-num">${golesTotal}</div><div class="resumen-label">Goles totales</div></div>
     `;
 
+    // Estadísticas individuales
     const stats = {};
-    (state.jugadores || []).forEach(j => stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 });
+    (state.jugadores || []).forEach(j => {
+      stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 };
+    });
+
     partidos.forEach(p => {
-      Object.entries(p.goles || {}).forEach(([j, g]) => {
+      Object.entries(p.goles || {}).forEach(([j, v]) => {
         if(!stats[j]) stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 };
         stats[j].partidos++;
-        stats[j].goles += g;
-        stats[j][p.resultado + 's']++;
+        stats[j].goles += v.goles || 0;
+        if(v.resultado === 'victoria')     stats[j].victorias++;
+        else if(v.resultado === 'empate')  stats[j].empates++;
+        else                               stats[j].derrotas++;
       });
     });
 
-    const sorted = Object.entries(stats).sort((a,b) => b[1].goles - a[1].goles);
+    const sorted = Object.entries(stats).sort((a, b) => b[1].goles - a[1].goles);
     const el = document.getElementById('tabla-stats');
-    if(!sorted.length || sorted.every(([_,s]) => s.partidos === 0)) {
+
+    if(!sorted.length || sorted.every(([_, s]) => s.partidos === 0)) {
       el.innerHTML = '<div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div>';
       return;
     }
@@ -813,7 +688,9 @@
         <thead>
           <tr>
             <th>#</th><th>Jugador</th><th>PJ</th><th>⚽ Goles</th>
-            <th style="color:#4ade80">V</th><th style="color:var(--amarillo)">E</th><th style="color:#f87171">D</th>
+            <th style="color:#4ade80">V</th>
+            <th style="color:var(--amarillo)">E</th>
+            <th style="color:#f87171">D</th>
           </tr>
         </thead>
         <tbody>
@@ -826,49 +703,74 @@
               <td><span class="stat-num stat-verde">${s.victorias}</span></td>
               <td><span class="stat-num stat-amarillo">${s.empates}</span></td>
               <td><span class="stat-num stat-rojo">${s.derrotas}</span></td>
-            </tr>
-          `).join('')}
+            </tr>`).join('')}
         </tbody>
       </table>
     `;
   }
 
-  // Escuchar cambios en tiempo real desde Firebase
+  // ── JUGADORES ─────────────────────────────────────────
+
+  window.addJugador = function() {
+    const inp = document.getElementById('nuevo-jugador');
+    const nombre = inp.value.trim();
+    if(!nombre) return;
+    if((state.jugadores || []).includes(nombre)) { toast('⚠️ Ya existe ese jugador'); return; }
+    if(!state.jugadores) state.jugadores = [];
+    state.jugadores.push(nombre);
+    save();
+    inp.value = '';
+    renderJugadores();
+    toast('✅ ' + nombre + ' añadido');
+  };
+
+  window.removeJugador = function(nombre) {
+    if(!confirm('¿Eliminar a ' + nombre + ' de la plantilla?')) return;
+    state.jugadores = state.jugadores.filter(j => j !== nombre);
+    save();
+    renderJugadores();
+  };
+
+  function renderJugadores() {
+    const el = document.getElementById('lista-jugadores');
+    if(!(state.jugadores || []).length) {
+      el.innerHTML = '<div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div>';
+      return;
+    }
+    el.innerHTML = state.jugadores.map(j => `
+      <div class="jugador-chip-plantilla">
+        <span>⚽ ${j}</span>
+        <button onclick="removeJugador('${j}')" title="Eliminar">×</button>
+      </div>`).join('');
+  }
+
+  // ── FIREBASE LISTENER ─────────────────────────────────
+
   onValue(ref(db, 'pachanga'), (snapshot) => {
     const data = snapshot.val();
-    if(data) {
-      state = {
-        jugadores: data.jugadores || [],
-        partidos: data.partidos || []
-      };
-    } else {
-      state = { jugadores: [], partidos: [] };
-    }
+    state = data
+      ? { jugadores: data.jugadores || [], partidos: data.partidos || [] }
+      : { jugadores: [], partidos: [] };
 
-    // Ocultar loading la primera vez
-    const overlay = document.getElementById('loading-overlay');
-    if(overlay) overlay.style.display = 'none';
-
+    document.getElementById('loading-overlay').style.display = 'none';
     setSyncStatus('ok', '✓ Sincronizado');
 
-    // Refrescar la pestaña activa
-    const tabActiva = document.querySelector('.tab.active');
-    const tabs = ['nuevo','historial','estadisticas','jugadores'];
-    const idx = Array.from(document.querySelectorAll('.tab')).indexOf(tabActiva);
-    const tab = tabs[idx];
-    if(tab === 'historial') renderHistorial();
+    const tabs = ['nuevo', 'historial', 'estadisticas', 'jugadores'];
+    const idx  = Array.from(document.querySelectorAll('.tab')).indexOf(document.querySelector('.tab.active'));
+    const tab  = tabs[idx];
+    if(tab === 'historial')    renderHistorial();
     if(tab === 'estadisticas') renderEstadisticas();
-    if(tab === 'jugadores') renderJugadores();
-    if(tab === 'nuevo') renderGolesForm();
-  }, (error) => {
+    if(tab === 'jugadores')    renderJugadores();
+    if(tab === 'nuevo')        renderFormEquipos();
+  }, () => {
     document.getElementById('loading-overlay').style.display = 'none';
     setSyncStatus('error', '✗ Sin conexión');
-    toast('❌ Error al conectar con Firebase');
   });
 
-  // Fecha auto
-  const hoy = new Date();
-  document.getElementById('fecha-partido').value = hoy.toLocaleDateString('es-ES', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
+  // Fecha automática
+  document.getElementById('fecha-partido').value = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'
+  });
 
 </script>
 </body>
