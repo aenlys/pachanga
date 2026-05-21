@@ -3,344 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚽ La Pachanga — Estadísticas</title>
+<title>⚽ La Pachanga</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --verde: #1a7a3c;
-    --verde-claro: #25a052;
-    --verde-oscuro: #0d4f26;
-    --amarillo: #f5c518;
-    --blanco: #f0f4f0;
-    --gris: #8a9e8d;
-    --fondo: #0a1a0e;
-    --tarjeta: #111f15;
-    --borde: #1e3525;
-    --rojo: #c0392b;
-    --rojo-oscuro: #7a1a1a;
-    --azul: #1a5fa0;
-    --azul-oscuro: #0d3a6b;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--fondo);
-    color: var(--blanco);
-    font-family: 'Barlow', sans-serif;
-    min-height: 100vh;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px),
-      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container { max-width: 960px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
-
-  #loading-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--fondo);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    gap: 16px;
-  }
-  #loading-overlay h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--amarillo); letter-spacing: 3px; }
-  #loading-overlay p { font-family: 'Barlow Condensed', sans-serif; color: var(--gris); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
-
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid var(--borde);
-    border-top-color: var(--verde-claro);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  #sync-status {
-    position: fixed; top: 12px; right: 12px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
-    padding: 4px 10px; border-radius: 5px; z-index: 100; transition: all 0.3s;
-  }
-  .sync-ok    { background: var(--verde-oscuro); color: #4ade80; border: 1px solid var(--verde); }
-  .sync-saving{ background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
-  .sync-error { background: #1a0d0d; color: #f87171; border: 1px solid #5a1010; }
-
-  header { text-align: center; padding: 40px 0 30px; border-bottom: 2px solid var(--borde); margin-bottom: 32px; }
-  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 64px; letter-spacing: 4px; color: var(--amarillo); text-shadow: 0 0 40px rgba(245,197,24,0.3); line-height: 1; }
-  header p { font-family: 'Barlow Condensed', sans-serif; color: var(--gris); font-size: 16px; letter-spacing: 3px; text-transform: uppercase; margin-top: 6px; }
-
-  .tabs { display: flex; gap: 4px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
-  .tab { flex: 1; padding: 10px; background: none; border: none; color: var(--gris); font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 7px; transition: all 0.2s; }
-  .tab.active { background: var(--verde); color: white; }
-  .tab:hover:not(.active) { color: var(--blanco); background: var(--borde); }
-
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  .card { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
-  .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: var(--amarillo); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-
-  .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  input[type="text"], input[type="number"], select {
-    background: var(--fondo); border: 1px solid var(--borde); color: var(--blanco);
-    padding: 10px 14px; border-radius: 8px; font-family: 'Barlow', sans-serif;
-    font-size: 15px; flex: 1; min-width: 140px; transition: border-color 0.2s;
-  }
-  input:focus, select:focus { outline: none; border-color: var(--verde-claro); }
-  select option { background: var(--fondo); }
-
-  .btn { padding: 10px 20px; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-  .btn-verde { background: var(--verde); color: white; }
-  .btn-verde:hover { background: var(--verde-claro); }
-  .btn-amarillo { background: var(--amarillo); color: var(--fondo); }
-  .btn-amarillo:hover { background: #ffd740; }
-  .btn-rojo { background: #7a1a1a; color: white; font-size: 12px; padding: 5px 10px; }
-  .btn-rojo:hover { background: #a02020; }
-
-  /* Equipos */
-  .equipos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-  @media (max-width: 600px) { .equipos-grid { grid-template-columns: 1fr; } }
-
-  .equipo-box { border-radius: 10px; padding: 16px; border: 2px solid; }
-  .equipo-box.rojo { background: rgba(192,57,43,0.08); border-color: var(--rojo); }
-  .equipo-box.azul { background: rgba(26,95,160,0.08); border-color: var(--azul); }
-
-  .equipo-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; margin-bottom: 6px; }
-  .equipo-titulo.rojo { color: #f87171; }
-  .equipo-titulo.azul { color: #60a5fa; }
-
-  .equipo-count { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
-  .equipo-count.rojo { color: #f87171; }
-  .equipo-count.azul { color: #60a5fa; }
-
-  .chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; }
-
-  .chip {
-    border-radius: 6px; padding: 5px 10px; font-size: 13px; font-weight: 600;
-    cursor: pointer; border: 1px solid; transition: all 0.15s; user-select: none;
-  }
-  .chip.libre { background: var(--verde-oscuro); border-color: var(--verde); color: #a0d4b0; }
-  .chip.libre:hover { background: var(--verde); color: white; }
-  .chip.en-rojo { background: rgba(192,57,43,0.2); border-color: var(--rojo); color: #f87171; }
-  .chip.en-rojo:hover { background: var(--rojo); color: white; }
-  .chip.en-azul { background: rgba(26,95,160,0.2); border-color: var(--azul); color: #60a5fa; }
-  .chip.en-azul:hover { background: var(--azul); color: white; }
-
-  .aviso { background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--amarillo); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px; margin-top: 12px; }
-
-  /* Marcador */
-  .marcador-inputs { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-  .marcador-inputs label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 4px; }
-  .label-rojo { color: #f87171; }
-  .label-azul { color: #60a5fa; }
-  .marcador-inputs input[type="number"] { width: 70px; min-width: 70px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 28px; padding: 6px 10px; }
-  .vs-sep { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gris); margin-top: 20px; }
-
-  /* Goles por jugador */
-  .goles-seccion-titulo { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 14px 0 8px; padding: 6px 10px; border-radius: 6px; }
-  .goles-seccion-titulo.rojo { background: rgba(192,57,43,0.12); color: #f87171; border-left: 3px solid var(--rojo); }
-  .goles-seccion-titulo.azul { background: rgba(26,95,160,0.12); color: #60a5fa; border-left: 3px solid var(--azul); }
-
-  .goles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 6px; }
-
-  .gol-item { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .gol-item.rojo { border-color: rgba(192,57,43,0.35); }
-  .gol-item.azul { border-color: rgba(26,95,160,0.35); }
-  .gol-item span { font-size: 14px; font-weight: 600; flex: 1; }
-
-  .gol-counter { display: flex; align-items: center; gap: 6px; }
-  .gol-counter button { background: var(--borde); border: none; color: white; width: 26px; height: 26px; border-radius: 5px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
-  .gol-counter button:hover { background: var(--verde); }
-  .gol-counter .num { font-family: 'Bebas Neue', sans-serif; font-size: 22px; min-width: 24px; text-align: center; color: var(--amarillo); }
-
-  /* Historial */
-  .partido-card { background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
-  .partido-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-  .partido-fecha { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--gris); text-transform: uppercase; }
-
-  .marcador-hist { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 12px; }
-  .marcador-equipo { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-  .marcador-equipo-nombre { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
-  .marcador-equipo-nombre.rojo { color: #f87171; }
-  .marcador-equipo-nombre.azul { color: #60a5fa; }
-  .marcador-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; }
-  .marcador-num.rojo { color: #f87171; }
-  .marcador-num.azul { color: #60a5fa; }
-  .marcador-sep-hist { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gris); margin-top: 18px; }
-
-  .ganador-badge { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; padding: 3px 10px; border-radius: 4px; }
-  .ganador-badge.rojo { background: rgba(192,57,43,0.25); color: #f87171; border: 1px solid var(--rojo); }
-  .ganador-badge.azul { background: rgba(26,95,160,0.25); color: #60a5fa; border: 1px solid var(--azul); }
-  .ganador-badge.empate { background: #1a1a0d; color: var(--amarillo); border: 1px solid #5a5010; }
-
-  .goleadores-hist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  @media (max-width: 500px) { .goleadores-hist { grid-template-columns: 1fr; } }
-  .goleadores-col-titulo { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
-  .goleadores-col-titulo.rojo { color: #f87171; }
-  .goleadores-col-titulo.azul { color: #60a5fa; }
-  .gol-badge { font-size: 12px; font-weight: 600; border-radius: 4px; padding: 2px 8px; display: inline-block; margin: 2px 0; }
-  .gol-badge.rojo { background: rgba(192,57,43,0.12); border: 1px solid rgba(192,57,43,0.3); color: #f87171; }
-  .gol-badge.azul { background: rgba(26,95,160,0.12); border: 1px solid rgba(26,95,160,0.3); color: #60a5fa; }
-
-  /* Stats */
-  .resumen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .resumen-item { background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; text-align: center; }
-  .resumen-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--amarillo); }
-  .resumen-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); margin-top: 4px; }
-
-  .stats-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .stats-table th { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris); padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--borde); }
-  .stats-table td { padding: 11px 12px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
-  .stats-table tr:last-child td { border-bottom: none; }
-  .stats-table tr:hover td { background: rgba(255,255,255,0.03); }
-  .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gris); width: 30px; }
-  .rank-1 { color: var(--amarillo); }
-  .rank-2 { color: #c0c0c0; }
-  .rank-3 { color: #cd7f32; }
-  .nombre-cell { font-weight: 700; font-size: 15px; }
-  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--blanco); }
-  .stat-verde { color: #4ade80; }
-  .stat-amarillo { color: var(--amarillo); }
-  .stat-rojo { color: #f87171; }
-
-  /* Plantilla jugadores */
-  .jugadores-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-  .jugador-chip-plantilla { background: var(--verde-oscuro); border: 1px solid var(--verde); border-radius: 6px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
-  .jugador-chip-plantilla button { background: none; border: none; color: var(--gris); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
-  .jugador-chip-plantilla button:hover { color: #ff6b6b; }
-
-  .empty-state { text-align: center; padding: 40px; color: var(--gris); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; }
-  .empty-state .icon { font-size: 40px; display: block; margin-bottom: 10px; }
-
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--verde); color: white; padding: 12px 24px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; z-index: 1000; transition: transform 0.3s ease; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  @media (max-width: 600px) {
-    header h1 { font-size: 44px; }
-    .tab { font-size: 12px; padding: 8px 5px; }
-    .stats-table { font-size: 13px; }
-  }
+:root{--verde:#1a7a3c;--verde-claro:#25a052;--verde-oscuro:#0d4f26;--amarillo:#f5c518;--blanco:#f0f4f0;--gris:#8a9e8d;--fondo:#0a1a0e;--tarjeta:#111f15;--borde:#1e3525;--rojo:#c0392b;--azul:#1a5fa0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--fondo);color:var(--blanco);font-family:'Barlow',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px);pointer-events:none;z-index:0;}
+.container{max-width:960px;margin:0 auto;padding:20px;position:relative;z-index:1;}
+#loading-overlay{position:fixed;inset:0;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;}
+#loading-overlay h2{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--amarillo);letter-spacing:3px;}
+#loading-overlay p{font-family:'Barlow Condensed',sans-serif;color:var(--gris);font-size:14px;letter-spacing:2px;text-transform:uppercase;}
+.spinner{width:40px;height:40px;border:3px solid var(--borde);border-top-color:var(--verde-claro);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#sync-status{position:fixed;top:12px;right:12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:5px;z-index:100;transition:all .3s;}
+.sync-ok{background:var(--verde-oscuro);color:#4ade80;border:1px solid var(--verde);}
+.sync-saving{background:#1a1a0d;color:var(--amarillo);border:1px solid #5a5010;}
+.sync-error{background:#1a0d0d;color:#f87171;border:1px solid #5a1010;}
+header{text-align:center;padding:40px 0 30px;border-bottom:2px solid var(--borde);margin-bottom:32px;}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:4px;color:var(--amarillo);text-shadow:0 0 40px rgba(245,197,24,.3);line-height:1;}
+header p{font-family:'Barlow Condensed',sans-serif;color:var(--gris);font-size:16px;letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
+.temporada-badge{display:inline-block;background:var(--verde-oscuro);border:1px solid var(--verde);border-radius:6px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-top:8px;}
+.tabs{display:flex;gap:4px;background:var(--tarjeta);border:1px solid var(--borde);border-radius:10px;padding:4px;margin-bottom:28px;overflow-x:auto;}
+.tab{flex:1;min-width:60px;padding:10px 6px;background:none;border:none;color:var(--gris);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:all .2s;white-space:nowrap;}
+.tab.active{background:var(--verde);color:white;}
+.tab:hover:not(.active){color:var(--blanco);background:var(--borde);}
+.panel{display:none;}.panel.active{display:block;}
+.card{background:var(--tarjeta);border:1px solid var(--borde);border-radius:12px;padding:24px;margin-bottom:20px;}
+.card h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--amarillo);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;}
+input[type="text"],input[type="number"],select{background:var(--fondo);border:1px solid var(--borde);color:var(--blanco);padding:10px 14px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:15px;flex:1;min-width:140px;transition:border-color .2s;}
+input:focus,select:focus{outline:none;border-color:var(--verde-claro);}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-verde{background:var(--verde);color:white;}.btn-verde:hover{background:var(--verde-claro);}
+.btn-amarillo{background:var(--amarillo);color:var(--fondo);}.btn-amarillo:hover{background:#ffd740;}
+.btn-rojo{background:#7a1a1a;color:white;font-size:12px;padding:5px 10px;}.btn-rojo:hover{background:#a02020;}
+.btn-ghost{background:transparent;border:1px solid var(--borde);color:var(--gris);padding:6px 14px;font-size:13px;}.btn-ghost:hover{border-color:var(--verde-claro);color:var(--blanco);}
+.btn-ia{background:linear-gradient(135deg,#1a3a6b,#0d4f26);border:1px solid #2a6a9a;color:#60a5fa;font-size:14px;padding:10px 18px;}.btn-ia:hover{border-color:#60a5fa;}
+/* KPIs */
+.kpi-hero{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.kpi-card{background:var(--tarjeta);border:1px solid var(--borde);border-radius:12px;padding:16px;text-align:center;position:relative;overflow:hidden;transition:border-color .2s;}
+.kpi-card:hover{border-color:var(--verde);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.oro::before{background:linear-gradient(90deg,var(--amarillo),#ffd740);}
+.kpi-card.rojo-card::before{background:linear-gradient(90deg,var(--rojo),#e74c3c);}
+.kpi-card.azul-card::before{background:linear-gradient(90deg,var(--azul),#2980b9);}
+.kpi-card.verde-card::before{background:linear-gradient(90deg,var(--verde),var(--verde-claro));}
+.kpi-card.gris-card::before{background:linear-gradient(90deg,#4a5568,#718096);}
+.kpi-card.purple-card::before{background:linear-gradient(90deg,#6b21a8,#9333ea);}
+.kpi-icon{font-size:26px;display:block;margin-bottom:6px;}
+.kpi-titulo{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);margin-bottom:5px;}
+.kpi-nombre{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--blanco);line-height:1.1;}
+.kpi-valor{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--gris);margin-top:3px;}
+.kpi-valor span{color:var(--amarillo);font-weight:700;}
+/* Temporada selector */
+.temporada-selector{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.temporada-selector label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gris);}
+.temporada-selector select{max-width:160px;flex:none;}
+/* Viernes */
+.viernes-selector{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.viernes-nav{background:var(--borde);border:none;color:var(--blanco);width:36px;height:36px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0;}
+.viernes-nav:hover{background:var(--verde);}
+.viernes-display{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--blanco);background:var(--fondo);border:1px solid var(--borde);border-radius:8px;padding:8px 16px;flex:1;text-align:center;min-width:200px;}
+.viernes-display.fecha-ok{border-color:var(--verde);}
+.viernes-display.fecha-dup{border-color:var(--rojo);}
+.viernes-hoy{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--amarillo);text-transform:uppercase;cursor:pointer;text-decoration:underline;flex-shrink:0;}
+.fecha-aviso{border-radius:8px;padding:10px 14px;font-size:13px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;margin-top:10px;display:none;}
+.fecha-aviso.error{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f87171;}
+.fecha-aviso.ok{background:rgba(26,122,60,.12);border:1px solid var(--verde);color:#4ade80;}
+/* Selección jugadores */
+.seleccion-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.sel-chip{border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px;}
+.sel-chip.inactivo{background:var(--fondo);border-color:var(--borde);color:var(--gris);}
+.sel-chip.inactivo:hover{border-color:var(--verde);color:var(--blanco);}
+.sel-chip.seleccionado{background:var(--verde-oscuro);border-color:var(--verde-claro);color:#a0d4b0;}
+.sel-chip .sel-score{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--amarillo);}
+.sel-count{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;color:var(--gris);margin-top:10px;}
+.sel-count span{color:var(--amarillo);font-weight:700;}
+/* Slider */
+.slider-wrap{margin:16px 0;}
+.slider-labels{display:flex;justify-content:space-between;margin-bottom:8px;}
+.slider-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
+.slider-label.skills-label{color:var(--amarillo);}.slider-label.hist-label{color:#60a5fa;}
+.slider-pct{font-family:'Bebas Neue',sans-serif;font-size:22px;}
+.slider-track{position:relative;height:8px;background:var(--borde);border-radius:4px;margin:12px 0;}
+.slider-fill{position:absolute;left:0;top:0;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--amarillo),#60a5fa);transition:width .1s;}
+input[type="range"]{-webkit-appearance:none;appearance:none;position:absolute;top:-6px;left:0;width:100%;height:20px;background:transparent;cursor:pointer;margin:0;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:white;border:2px solid var(--verde-claro);box-shadow:0 0 6px rgba(0,0,0,.4);cursor:pointer;}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:white;border:2px solid var(--verde-claro);cursor:pointer;}
+/* IA resultado */
+.ia-resultado{background:var(--fondo);border:1px solid #2a6a9a;border-radius:12px;padding:20px;margin-top:16px;}
+.ia-titulo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#60a5fa;margin-bottom:12px;}
+.ia-comentario{font-family:'Barlow',sans-serif;font-size:14px;color:var(--gris);background:rgba(26,95,160,.08);border:1px solid rgba(26,95,160,.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;line-height:1.6;}
+.ia-equipos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:580px){.ia-equipos-grid{grid-template-columns:1fr;}}
+.ia-equipo-box{border-radius:10px;padding:14px;border:2px solid;}
+.ia-equipo-box.rojo{background:rgba(192,57,43,.08);border-color:var(--rojo);}
+.ia-equipo-box.azul{background:rgba(26,95,160,.08);border-color:var(--azul);}
+.ia-equipo-titulo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.ia-equipo-titulo.rojo{color:#f87171;}.ia-equipo-titulo.azul{color:#60a5fa;}
+.ia-equipo-pts{font-size:13px;color:var(--gris);font-family:'Barlow Condensed',sans-serif;}
+.ia-jugador-row{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:6px;margin-bottom:4px;background:rgba(255,255,255,.03);gap:8px;}
+.ia-jugador-nombre{font-size:14px;font-weight:600;flex:1;}
+.ia-jugador-pts{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--amarillo);}
+.ia-jugador-mover{background:none;border:none;color:var(--gris);cursor:pointer;font-size:16px;padding:2px 4px;transition:color .15s;}
+.ia-jugador-mover:hover{color:var(--amarillo);}
+.ia-balance{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;padding:10px;background:rgba(255,255,255,.03);border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;}
+.balance-bar-wrap{flex:1;height:8px;background:var(--borde);border-radius:4px;overflow:hidden;}
+.balance-bar{height:100%;border-radius:4px;transition:width .3s;}
+/* Equipos */
+.equipos-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+@media(max-width:600px){.equipos-grid{grid-template-columns:1fr;}}
+.equipo-box{border-radius:10px;padding:16px;border:2px solid;}
+.equipo-box.rojo{background:rgba(192,57,43,.08);border-color:var(--rojo);}
+.equipo-box.azul{background:rgba(26,95,160,.08);border-color:var(--azul);}
+.equipo-titulo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:6px;}
+.equipo-titulo.rojo{color:#f87171;}.equipo-titulo.azul{color:#60a5fa;}
+.equipo-count{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.equipo-count.rojo{color:#f87171;}.equipo-count.azul{color:#60a5fa;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:6px;min-height:36px;}
+.chip{border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;user-select:none;}
+.chip.libre{background:var(--verde-oscuro);border-color:var(--verde);color:#a0d4b0;}.chip.libre:hover{background:var(--verde);color:white;}
+.chip.en-rojo{background:rgba(192,57,43,.2);border-color:var(--rojo);color:#f87171;}.chip.en-rojo:hover{background:var(--rojo);color:white;}
+.chip.en-azul{background:rgba(26,95,160,.2);border-color:var(--azul);color:#60a5fa;}.chip.en-azul:hover{background:var(--azul);color:white;}
+.aviso{background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--amarillo);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;margin-top:12px;}
+/* Marcador auto */
+.marcador-auto{display:flex;align-items:center;justify-content:center;gap:20px;padding:20px;background:var(--fondo);border:1px solid var(--borde);border-radius:12px;margin-top:14px;}
+.marcador-auto-equipo{text-align:center;}
+.marcador-auto-nombre{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.marcador-auto-nombre.rojo{color:#f87171;}.marcador-auto-nombre.azul{color:#60a5fa;}
+.marcador-auto-num{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:1;}
+.marcador-auto-num.rojo{color:#f87171;}.marcador-auto-num.azul{color:#60a5fa;}
+.marcador-auto-sep{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gris);margin-top:20px;}
+/* Goles */
+.goles-seccion-titulo{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:14px 0 8px;padding:6px 10px;border-radius:6px;}
+.goles-seccion-titulo.rojo{background:rgba(192,57,43,.12);color:#f87171;border-left:3px solid var(--rojo);}
+.goles-seccion-titulo.azul{background:rgba(26,95,160,.12);color:#60a5fa;border-left:3px solid var(--azul);}
+.goles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:6px;}
+.gol-item{background:var(--fondo);border:1px solid var(--borde);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.gol-item.rojo{border-color:rgba(192,57,43,.35);}.gol-item.azul{border-color:rgba(26,95,160,.35);}
+.gol-item span{font-size:14px;font-weight:600;flex:1;}
+.gol-counter{display:flex;align-items:center;gap:6px;}
+.gol-counter button{background:var(--borde);border:none;color:white;width:26px;height:26px;border-radius:5px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.gol-counter button:hover{background:var(--verde);}
+.gol-counter .num{font-family:'Bebas Neue',sans-serif;font-size:22px;min-width:24px;text-align:center;color:var(--amarillo);}
+/* Historial */
+.partido-card{background:var(--fondo);border:1px solid var(--borde);border-radius:10px;padding:16px;margin-bottom:12px;}
+.partido-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.partido-fecha{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;color:var(--gris);text-transform:uppercase;}
+.marcador-hist{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px;}
+.marcador-equipo{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.marcador-equipo-nombre{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:700;}
+.marcador-equipo-nombre.rojo{color:#f87171;}.marcador-equipo-nombre.azul{color:#60a5fa;}
+.marcador-num{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;}
+.marcador-num.rojo{color:#f87171;}.marcador-num.azul{color:#60a5fa;}
+.marcador-sep-hist{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gris);margin-top:18px;}
+.ganador-badge{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;padding:3px 10px;border-radius:4px;}
+.ganador-badge.rojo{background:rgba(192,57,43,.25);color:#f87171;border:1px solid var(--rojo);}
+.ganador-badge.azul{background:rgba(26,95,160,.25);color:#60a5fa;border:1px solid var(--azul);}
+.ganador-badge.empate{background:#1a1a0d;color:var(--amarillo);border:1px solid #5a5010;}
+.goleadores-hist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+@media(max-width:500px){.goleadores-hist{grid-template-columns:1fr;}}
+.goleadores-col-titulo{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+.goleadores-col-titulo.rojo{color:#f87171;}.goleadores-col-titulo.azul{color:#60a5fa;}
+.gol-badge{font-size:12px;font-weight:600;border-radius:4px;padding:2px 8px;display:inline-block;margin:2px 0;}
+.gol-badge.rojo{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+.gol-badge.azul{background:rgba(26,95,160,.12);border:1px solid rgba(26,95,160,.3);color:#60a5fa;}
+.temporada-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;background:var(--verde-oscuro);border:1px solid var(--verde);border-radius:4px;padding:1px 7px;color:#4ade80;}
+/* Stats */
+.resumen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:24px;}
+.resumen-item{background:var(--fondo);border:1px solid var(--borde);border-radius:10px;padding:16px;text-align:center;}
+.resumen-num{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;color:var(--amarillo);}
+.resumen-label{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);margin-top:4px;}
+.stats-table{width:100%;border-collapse:collapse;font-size:14px;}
+.stats-table th{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);padding:10px 12px;text-align:left;border-bottom:1px solid var(--borde);}
+.stats-table td{padding:11px 12px;border-bottom:1px solid var(--borde);vertical-align:middle;}
+.stats-table tr:last-child td{border-bottom:none;}
+.stats-table tr:hover td{background:rgba(255,255,255,.03);}
+.rank-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gris);width:30px;}
+.rank-1{color:var(--amarillo);}.rank-2{color:#c0c0c0;}.rank-3{color:#cd7f32;}
+.nombre-cell{font-weight:700;font-size:15px;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--blanco);}
+.stat-verde{color:#4ade80;}.stat-amarillo{color:var(--amarillo);}.stat-rojo{color:#f87171;}
+/* Jugadores */
+.jugadores-lista{display:flex;flex-direction:column;gap:12px;margin-top:16px;}
+.jugador-card{background:var(--fondo);border:1px solid var(--borde);border-radius:12px;padding:16px;transition:border-color .2s;}
+.jugador-card:hover{border-color:var(--verde);}
+.jugador-card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.jugador-nombre-wrap{display:flex;align-items:center;gap:10px;flex:1;}
+.jugador-nombre-text{font-size:16px;font-weight:700;}
+.jugador-nombre-input{background:var(--tarjeta);border:1px solid var(--verde-claro);color:var(--blanco);padding:5px 10px;border-radius:6px;font-family:'Barlow',sans-serif;font-size:15px;font-weight:700;flex:1;max-width:200px;display:none;}
+.jugador-nombre-input:focus{outline:none;}
+.jugador-acciones{display:flex;gap:6px;flex-shrink:0;}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.skill-row{display:flex;flex-direction:column;gap:4px;}
+.skill-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gris);display:flex;align-items:center;gap:5px;}
+.skill-stars{display:flex;gap:3px;}
+.star{font-size:20px;cursor:pointer;transition:transform .1s;line-height:1;user-select:none;}
+.star:hover{transform:scale(1.2);}
+.star.filled{color:var(--amarillo);text-shadow:0 0 8px rgba(245,197,24,.5);}
+.star.empty{color:#2a3f2e;}
+.empty-state{text-align:center;padding:40px;color:var(--gris);font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;text-transform:uppercase;}
+.empty-state .icon{font-size:40px;display:block;margin-bottom:10px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde);color:white;padding:12px 24px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;z-index:1000;transition:transform .3s ease;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){
+  header h1{font-size:44px;}
+  .tab{font-size:11px;padding:8px 4px;}
+  .stats-table{font-size:13px;}
+  .skills-grid{grid-template-columns:1fr 1fr;}
+  .kpi-hero{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 </head>
 <body>
-
-<div id="loading-overlay">
-  <div class="spinner"></div>
-  <h2>⚽ La Pachanga</h2>
-  <p>Conectando con Firebase...</p>
-</div>
-
+<div id="loading-overlay"><div class="spinner"></div><h2>⚽ La Pachanga</h2><p>Cargando datos...</p></div>
 <div id="sync-status" class="sync-ok" style="display:none">✓ Sincronizado</div>
-
 <div class="container">
   <header>
     <h1>⚽ La Pachanga</h1>
     <p>Estadísticas del equipo · Cada viernes</p>
+    <div class="temporada-badge" id="temporada-header">Temporada 2025/2026</div>
   </header>
-
   <div class="tabs">
-    <button class="tab active" onclick="setTab('nuevo')">Nuevo Partido</button>
-    <button class="tab" onclick="setTab('historial')">Historial</button>
-    <button class="tab" onclick="setTab('estadisticas')">Estadísticas</button>
-    <button class="tab" onclick="setTab('jugadores')">Jugadores</button>
+    <button class="tab active" onclick="setTab('resumen')">🏠 Resumen</button>
+    <button class="tab" onclick="setTab('nuevo')">➕ Partido</button>
+    <button class="tab" onclick="setTab('historial')">📋 Historial</button>
+    <button class="tab" onclick="setTab('estadisticas')">📊 Stats</button>
+    <button class="tab" onclick="setTab('jugadores')">👥 Jugadores</button>
   </div>
 
-  <!-- TAB: NUEVO PARTIDO -->
-  <div class="panel active" id="panel-nuevo">
-
-    <div class="card">
-      <h2>📅 Fecha</h2>
-      <input type="text" id="fecha-partido" placeholder="Viernes dd/mm/aaaa" style="max-width:300px">
+  <!-- RESUMEN -->
+  <div class="panel active" id="panel-resumen">
+    <div class="temporada-selector">
+      <label>Temporada:</label>
+      <select id="sel-temporada-resumen" onchange="onCambioTemporada()"></select>
     </div>
+    <div id="kpi-hero-wrap"></div>
+    <div class="card"><h2>📈 Resumen de Temporada</h2><div class="resumen-grid" id="resumen-temporada"></div></div>
+  </div>
 
+  <!-- NUEVO PARTIDO -->
+  <div class="panel" id="panel-nuevo">
     <div class="card">
-      <h2>👕 Formar Equipos</h2>
-      <p style="color:var(--gris); font-size:13px; margin-bottom:14px">
-        Toca un jugador para añadirlo al Equipo Rojo. Si ya está en Rojo, pasa a Azul. Si está en Azul, lo quitas.
-      </p>
-
+      <h2>📅 Fecha del Partido</h2>
+      <div class="viernes-selector">
+        <button class="viernes-nav" onclick="cambiarViernes(-1)">‹</button>
+        <div class="viernes-display" id="viernes-display">—</div>
+        <button class="viernes-nav" onclick="cambiarViernes(1)">›</button>
+        <span class="viernes-hoy" onclick="irAViernesHoy()">Hoy</span>
+      </div>
+      <div class="fecha-aviso" id="fecha-aviso"></div>
+    </div>
+    <div class="card">
+      <h2>🧑‍🤝‍🧑 Los 10 de Hoy</h2>
+      <p style="color:var(--gris);font-size:13px;margin-bottom:4px">Selecciona exactamente 10 jugadores.</p>
+      <div class="seleccion-grid" id="seleccion-jugadores"></div>
+      <div class="sel-count" id="sel-count">Seleccionados: <span>0</span> / 10</div>
+    </div>
+    <div class="card">
+      <h2>🤖 Equilibrar Equipos</h2>
+      <p style="color:var(--gris);font-size:13px;margin-bottom:16px">Ajusta el peso y genera el reparto más equilibrado.</p>
+      <div class="slider-wrap">
+        <div class="slider-labels">
+          <div><div class="slider-label skills-label">⭐ Skills</div><div class="slider-pct" id="pct-skills" style="color:var(--amarillo)">50%</div></div>
+          <div style="text-align:right"><div class="slider-label hist-label">📊 Historial</div><div class="slider-pct" id="pct-hist" style="color:#60a5fa">50%</div></div>
+        </div>
+        <div class="slider-track">
+          <div class="slider-fill" id="slider-fill" style="width:50%"></div>
+          <input type="range" id="slider-ia" min="0" max="100" value="50" oninput="onSliderChange(this.value)">
+        </div>
+      </div>
+      <button class="btn btn-ia" onclick="equilibrarEquipos()" style="width:100%;margin-top:4px">🤖 GENERAR REPARTO EQUILIBRADO</button>
+      <div id="ia-resultado" style="display:none"></div>
+    </div>
+    <div class="card">
+      <h2>👕 Equipos</h2>
+      <p style="color:var(--gris);font-size:13px;margin-bottom:14px">Toca: <strong style="color:#a0d4b0">libre → 🔴 Rojo → 🔵 Azul → libre</strong></p>
       <div style="margin-bottom:14px">
-        <div style="font-family:'Barlow Condensed',sans-serif; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin-bottom:8px">Sin asignar</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);margin-bottom:8px">Sin asignar</div>
         <div class="chips-wrap" id="chips-libres"></div>
       </div>
-
       <div class="equipos-grid">
-        <div class="equipo-box rojo">
-          <div class="equipo-titulo rojo">🔴 Equipo Rojo</div>
-          <div class="equipo-count rojo" id="count-rojo">0 / 5 jugadores</div>
-          <div class="chips-wrap" id="chips-rojo"></div>
-        </div>
-        <div class="equipo-box azul">
-          <div class="equipo-titulo azul">🔵 Equipo Azul</div>
-          <div class="equipo-count azul" id="count-azul">0 / 5 jugadores</div>
-          <div class="chips-wrap" id="chips-azul"></div>
-        </div>
+        <div class="equipo-box rojo"><div class="equipo-titulo rojo">🔴 Equipo Rojo</div><div class="equipo-count rojo" id="count-rojo">0 / 5 jugadores</div><div class="chips-wrap" id="chips-rojo"></div></div>
+        <div class="equipo-box azul"><div class="equipo-titulo azul">🔵 Equipo Azul</div><div class="equipo-count azul" id="count-azul">0 / 5 jugadores</div><div class="chips-wrap" id="chips-azul"></div></div>
       </div>
       <div id="aviso-equipos"></div>
     </div>
-
-    <div class="card">
-      <h2>⚽ Marcador Final</h2>
-      <div class="marcador-inputs">
-        <div>
-          <label class="label-rojo">🔴 Equipo Rojo</label>
-          <input type="number" id="goles-rojo" value="0" min="0">
-        </div>
-        <div class="vs-sep">–</div>
-        <div>
-          <label class="label-azul">🔵 Equipo Azul</label>
-          <input type="number" id="goles-azul" value="0" min="0">
-        </div>
-      </div>
-    </div>
-
     <div class="card">
       <h2>🥅 Goles por Jugador</h2>
-      <div id="goles-por-jugador">
-        <div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div>
+      <div id="goles-por-jugador"><div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div></div>
+      <div id="marcador-auto-wrap" style="display:none">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);margin-top:16px;margin-bottom:4px">Marcador calculado automáticamente</div>
+        <div class="marcador-auto">
+          <div class="marcador-auto-equipo"><div class="marcador-auto-nombre rojo">🔴 Rojo</div><div class="marcador-auto-num rojo" id="marcador-auto-rojo">0</div></div>
+          <div class="marcador-auto-sep">–</div>
+          <div class="marcador-auto-equipo"><div class="marcador-auto-nombre azul">🔵 Azul</div><div class="marcador-auto-num azul" id="marcador-auto-azul">0</div></div>
+        </div>
       </div>
     </div>
-
-    <div style="text-align:right; margin-top:8px">
+    <div style="text-align:right;margin-top:8px">
       <button class="btn btn-amarillo" onclick="guardarPartido()">GUARDAR PARTIDO ⚽</button>
     </div>
   </div>
 
-  <!-- TAB: HISTORIAL -->
+  <!-- HISTORIAL -->
   <div class="panel" id="panel-historial">
     <div class="card">
       <h2>📋 Historial de Partidos</h2>
-      <div id="lista-historial">
-        <div class="empty-state"><span class="icon">📭</span>Todavía no hay partidos registrados</div>
-      </div>
+      <div class="temporada-selector"><label>Temporada:</label><select id="sel-temporada-historial" onchange="renderHistorial()"></select></div>
+      <div id="lista-historial"><div class="empty-state"><span class="icon">📭</span>No hay partidos</div></div>
     </div>
   </div>
 
-  <!-- TAB: ESTADÍSTICAS -->
+  <!-- ESTADÍSTICAS -->
   <div class="panel" id="panel-estadisticas">
+    <div class="temporada-selector"><label>Temporada:</label><select id="sel-temporada-stats" onchange="renderEstadisticas()"></select></div>
     <div class="resumen-grid" id="resumen-global"></div>
-    <div class="card">
-      <h2>🏅 Tabla de Goleadores</h2>
-      <div id="tabla-stats">
-        <div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div>
-      </div>
-    </div>
+    <div class="card"><h2>🏅 Tabla de Goleadores</h2><div id="tabla-stats"><div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div></div></div>
   </div>
 
-  <!-- TAB: JUGADORES -->
+  <!-- JUGADORES -->
   <div class="panel" id="panel-jugadores">
     <div class="card">
       <h2>👥 Plantilla de la Peña</h2>
@@ -348,430 +331,389 @@
         <input type="text" id="nuevo-jugador" placeholder="Nombre del jugador..." onkeydown="if(event.key==='Enter')addJugador()">
         <button class="btn btn-verde" onclick="addJugador()">+ AÑADIR</button>
       </div>
-      <div class="jugadores-lista" id="lista-jugadores">
-        <div class="empty-state" style="width:100%; padding:20px">Aún no hay jugadores</div>
-      </div>
+      <div class="jugadores-lista" id="lista-jugadores"><div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div></div>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCLt6S1OIOGeNwjHiaoGCkxcMiis9h6TGo",
-    authDomain: "pachanga-6518c.firebaseapp.com",
-    databaseURL: "https://pachanga-6518c-default-rtdb.firebaseio.com",
-    projectId: "pachanga-6518c",
-    storageBucket: "pachanga-6518c.firebasestorage.app",
-    messagingSenderId: "691898587301",
-    appId: "1:691898587301:web:2c34942d765cc6f97d154c"
-  };
+const firebaseConfig={apiKey:"AIzaSyCLt6S1OIOGeNwjHiaoGCkxcMiis9h6TGo",authDomain:"pachanga-6518c.firebaseapp.com",databaseURL:"https://pachanga-6518c-default-rtdb.firebaseio.com",projectId:"pachanga-6518c",storageBucket:"pachanga-6518c.firebasestorage.app",messagingSenderId:"691898587301",appId:"1:691898587301:web:2c34942d765cc6f97d154c"};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
+const TEMPORADA_ACTUAL='2025/2026';
+const DATOS_INICIALES={"jugadores": [{"id": "1000", "nombre": "Aenlys", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1001", "nombre": "Angel", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1002", "nombre": "Canabal", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1003", "nombre": "Carballeira", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1004", "nombre": "Cesar", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1005", "nombre": "David Castro", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1006", "nombre": "David Corgo", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1007", "nombre": "Fernando", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1008", "nombre": "Fuentes", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1009", "nombre": "Jorge", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1010", "nombre": "Moar", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1011", "nombre": "Nico", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1012", "nombre": "Paco Javi", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1013", "nombre": "Primo Moar", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1014", "nombre": "Rubén Costoya", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}, {"id": "1015", "nombre": "Santi", "skills": {"velocidad": 0, "resistencia": 0, "fuerza": 0, "control": 0, "regate": 0, "portero": 0}}], "partidos": [{"id": 1757030400001, "fecha": "viernes, 05 de septiembre de 2025", "fechaKey": "2025-09-05", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 2}, "equipoRojo": ["Aenlys", "Santi", "Angel (Estebán)", "Jorge", "Canabal"], "equipoAzul": ["Moar", "Paco Javi", "David Corgo", "Fernando", "Fuentes"], "goles": {"Aenlys": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Santi": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Angel (Estebán)": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Jorge": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Fernando": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1757635200002, "fecha": "viernes, 12 de septiembre de 2025", "fechaKey": "2025-09-12", "temporada": "2025/2026", "marcador": {"rojo": 6, "azul": 3}, "equipoRojo": ["Jorge", "Angel", "Aenlys", "Santi", "Canabal"], "equipoAzul": ["Paco Javi", "Fernando", "Moar", "Fuentes", "David Corgo"], "goles": {"Jorge": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Angel": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Aenlys": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Santi": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 3, "equipo": "rojo", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Fernando": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Fuentes": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1758240000003, "fecha": "viernes, 19 de septiembre de 2025", "fechaKey": "2025-09-19", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 4}, "equipoRojo": ["Canabal", "Moar", "Fernando", "Fuentes", "Angel"], "equipoAzul": ["Santi", "Jorge", "Aenlys", "Paco Javi", "David Corgo"], "goles": {"Canabal": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Moar": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Angel": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Jorge": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "David Corgo": {"goles": 2, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1758844800004, "fecha": "viernes, 26 de septiembre de 2025", "fechaKey": "2025-09-26", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 5}, "equipoRojo": ["Fernando", "Paco Javi", "Fuentes", "Canabal", "Jorge"], "equipoAzul": ["Moar", "David Corgo", "Aenlys", "Santi", "Angel"], "goles": {"Fernando": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Canabal": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Jorge": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Moar": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Angel": {"goles": 1, "equipo": "azul", "resultado": "empate"}}}, {"id": 1759449600005, "fecha": "viernes, 03 de octubre de 2025", "fechaKey": "2025-10-03", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 3}, "equipoRojo": ["Paco Javi", "Fernando", "Jorge", "Moar", "Fuentes"], "equipoAzul": ["Canabal", "Santi", "Aenlys", "David Corgo", "Angel"], "goles": {"Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Jorge": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Angel": {"goles": 1, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1760054400006, "fecha": "viernes, 10 de octubre de 2025", "fechaKey": "2025-10-10", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 3}, "equipoRojo": ["Fernando", "Paco Javi", "Fuentes", "Moar", "David Castro"], "equipoAzul": ["Jorge", "Canabal", "Santi", "Aenlys"], "goles": {"Fernando": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1760659200007, "fecha": "viernes, 17 de octubre de 2025", "fechaKey": "2025-10-17", "temporada": "2025/2026", "marcador": {"rojo": 7, "azul": 5}, "equipoRojo": ["Jorge", "Fernando", "David Castro", "Fuentes", "Canabal"], "equipoAzul": ["Moar", "Paco Javi", "Aenlys", "David Corgo", "Santi"], "goles": {"Jorge": {"goles": 3, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Paco Javi": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1761264000008, "fecha": "viernes, 24 de octubre de 2025", "fechaKey": "2025-10-24", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 4}, "equipoRojo": ["Fuentes", "Fernando", "Jorge", "Angel", "Rubén Costoya"], "equipoAzul": ["Canabal", "Paco Javi", "Moar", "Aenlys", "David Corgo"], "goles": {"Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Angel": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Rubén Costoya": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1761868800009, "fecha": "viernes, 31 de octubre de 2025", "fechaKey": "2025-10-31", "temporada": "2025/2026", "marcador": {"rojo": 2, "azul": 5}, "equipoRojo": ["Paco Javi", "Fuentes", "Fernando", "David Corgo", "Santi"], "equipoAzul": ["Jorge", "Canabal", "Aenlys", "Nico", "Moar"], "goles": {"Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "David Corgo": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Santi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Aenlys": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Nico": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1762473600010, "fecha": "viernes, 07 de noviembre de 2025", "fechaKey": "2025-11-07", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 4}, "equipoRojo": ["Jorge", "Fernando", "Moar", "Paco Javi", "Carballeira"], "equipoAzul": ["Canabal", "Fuentes", "David Corgo", "Aenlys", "Rubén Costoya"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Fernando": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Moar": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Rubén Costoya": {"goles": 0, "equipo": "azul", "resultado": "empate"}}}, {"id": 1763078400011, "fecha": "viernes, 14 de noviembre de 2025", "fechaKey": "2025-11-14", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 5}, "equipoRojo": ["Fernando", "Fuentes", "Paco Javi", "Nico", "Santi"], "equipoAzul": ["Jorge", "Canabal", "Moar", "David Corgo", "Carballeira"], "goles": {"Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Nico": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Carballeira": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1763683200012, "fecha": "viernes, 21 de noviembre de 2025", "fechaKey": "2025-11-21", "temporada": "2025/2026", "marcador": {"rojo": 6, "azul": 4}, "equipoRojo": ["Canabal", "Fernando", "Jorge", "David Castro", "Rubén Costoya"], "equipoAzul": ["Fuentes", "Moar", "Paco Javi", "Aenlys", "David Corgo"], "goles": {"Canabal": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Jorge": {"goles": 3, "equipo": "rojo", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Rubén Costoya": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1764288000013, "fecha": "viernes, 28 de noviembre de 2025", "fechaKey": "2025-11-28", "temporada": "2025/2026", "marcador": {"rojo": 2, "azul": 6}, "equipoRojo": ["Moar", "Fuentes", "Paco Javi", "Carballeira", "Angel"], "equipoAzul": ["Jorge", "Canabal", "Fernando", "Nico", "Santi"], "goles": {"Moar": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Angel": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Fernando": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Nico": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1764892800014, "fecha": "viernes, 05 de diciembre de 2025", "fechaKey": "2025-12-05", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 5}, "equipoRojo": ["Fernando", "Paco Javi", "Fuentes", "Santi", "Primo Moar"], "equipoAzul": ["Jorge", "Canabal", "Aenlys", "Moar", "David Corgo"], "goles": {"Fernando": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Santi": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Primo Moar": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "empate"}}}, {"id": 1765497600015, "fecha": "viernes, 12 de diciembre de 2025", "fechaKey": "2025-12-12", "temporada": "2025/2026", "marcador": {"rojo": 6, "azul": 3}, "equipoRojo": ["Jorge", "Fernando", "Canabal", "David Castro", "Carlos Fuentes"], "equipoAzul": ["Fuentes", "Paco Javi", "Moar", "Aenlys", "Rubén Costoya"], "goles": {"Jorge": {"goles": 3, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Carlos Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Rubén Costoya": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1766102400016, "fecha": "viernes, 19 de diciembre de 2025", "fechaKey": "2025-12-19", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 5}, "equipoRojo": ["Fuentes", "Fernando", "Paco Javi", "David Corgo", "Cesar Corgo"], "equipoAzul": ["Jorge", "Canabal", "Moar", "Nico", "Santi"], "goles": {"Fuentes": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "David Corgo": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Cesar Corgo": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Nico": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1767916800017, "fecha": "viernes, 09 de enero de 2026", "fechaKey": "2026-01-09", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 3}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "Carballeira", "Sergio"], "equipoAzul": ["Paco Javi", "Moar", "Aenlys", "David Corgo", "Angel"], "goles": {"Jorge": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Sergio": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Angel": {"goles": 1, "equipo": "azul", "resultado": "empate"}}}, {"id": 1768521600018, "fecha": "viernes, 16 de enero de 2026", "fechaKey": "2026-01-16", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 6}, "equipoRojo": ["Canabal", "Fernando", "Paco Javi", "Primo Moar", "Nico"], "equipoAzul": ["Jorge", "Fuentes", "Moar", "David Corgo", "Rubén Costoya"], "goles": {"Canabal": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Primo Moar": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Nico": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Fuentes": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Rubén Costoya": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1769126400019, "fecha": "viernes, 23 de enero de 2026", "fechaKey": "2026-01-23", "temporada": "2025/2026", "marcador": {"rojo": 2, "azul": 4}, "equipoRojo": ["Fernando", "Fuentes", "Paco Javi", "Santi", "Nestor"], "equipoAzul": ["Jorge", "Canabal", "Moar", "Aenlys"], "goles": {"Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Santi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Nestor": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1769731200020, "fecha": "viernes, 30 de enero de 2026", "fechaKey": "2026-01-30", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 4}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "David Castro", "Carballeira"], "equipoAzul": ["Paco Javi", "Moar", "Aenlys", "David Corgo", "Cesar"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 2, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Cesar": {"goles": 1, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1770336000021, "fecha": "viernes, 06 de febrero de 2026", "fechaKey": "2026-02-06", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 5}, "equipoRojo": ["Canabal", "Fernando", "Paco Javi", "Angel", "Rubén Costoya"], "equipoAzul": ["Jorge", "Fuentes", "Moar", "Nico", "Santi"], "goles": {"Canabal": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Angel": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Rubén Costoya": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Nico": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Santi": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1770940800022, "fecha": "viernes, 13 de febrero de 2026", "fechaKey": "2026-02-13", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 5}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "David Corgo", "Carlos Fuentes"], "equipoAzul": ["Canabal", "Paco Javi", "Moar", "Aenlys", "Primo Moar"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "David Corgo": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Carlos Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Primo Moar": {"goles": 1, "equipo": "azul", "resultado": "empate"}}}, {"id": 1771545600023, "fecha": "viernes, 20 de febrero de 2026", "fechaKey": "2026-02-20", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 6}, "equipoRojo": ["Fernando", "Fuentes", "Paco Javi", "Carballeira", "Sergio"], "equipoAzul": ["Jorge", "Canabal", "Moar", "David Corgo", "Angel"], "goles": {"Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Carballeira": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Sergio": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Angel": {"goles": 1, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1772150400024, "fecha": "viernes, 27 de febrero de 2026", "fechaKey": "2026-02-27", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 4}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "Nico", "Rubén Aenlys"], "equipoAzul": ["Paco Javi", "Moar", "Aenlys", "David Corgo", "Cesar"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Nico": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Rubén Aenlys": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "David Corgo": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Cesar": {"goles": 1, "equipo": "azul", "resultado": "empate"}}}, {"id": 1772755200025, "fecha": "viernes, 06 de marzo de 2026", "fechaKey": "2026-03-06", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 6}, "equipoRojo": ["Canabal", "Fernando", "Paco Javi", "Santi", "hermano Jorge"], "equipoAzul": ["Jorge", "Fuentes", "Moar", "David Castro", "Angel"], "goles": {"Canabal": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Santi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "hermano Jorge": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 3, "equipo": "azul", "resultado": "victoria"}, "Fuentes": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Angel": {"goles": 1, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1773360000026, "fecha": "viernes, 13 de marzo de 2026", "fechaKey": "2026-03-13", "temporada": "2025/2026", "marcador": {"rojo": 5, "azul": 3}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "David Corgo", "Carballeira"], "equipoAzul": ["Canabal", "Paco Javi", "Moar", "Aenlys", "Primo Moar"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "David Corgo": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Canabal": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Primo Moar": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1773964800027, "fecha": "viernes, 20 de marzo de 2026", "fechaKey": "2026-03-20", "temporada": "2025/2026", "marcador": {"rojo": 2, "azul": 5}, "equipoRojo": ["Fernando", "Fuentes", "Paco Javi", "Nico", "José Luis"], "equipoAzul": ["Jorge", "Canabal", "Moar", "Santi", "Cesar"], "goles": {"Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Nico": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "José Luis": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "Santi": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Cesar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1774569600028, "fecha": "viernes, 27 de marzo de 2026", "fechaKey": "2026-03-27", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 3}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "Angel", "Couceiro"], "equipoAzul": ["Paco Javi", "Moar", "Aenlys", "David Corgo", "Rubén Costoya"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "victoria"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Fuentes": {"goles": 0, "equipo": "rojo", "resultado": "victoria"}, "Angel": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Couceiro": {"goles": 1, "equipo": "rojo", "resultado": "victoria"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "derrota"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "David Corgo": {"goles": 1, "equipo": "azul", "resultado": "derrota"}, "Rubén Costoya": {"goles": 0, "equipo": "azul", "resultado": "derrota"}}}, {"id": 1775779200029, "fecha": "viernes, 10 de abril de 2026", "fechaKey": "2026-04-10", "temporada": "2025/2026", "marcador": {"rojo": 3, "azul": 5}, "equipoRojo": ["Canabal", "Fernando", "Paco Javi", "Carballeira", "Estebán"], "equipoAzul": ["Jorge", "Fuentes", "Moar", "David Castro", "Angel"], "goles": {"Canabal": {"goles": 2, "equipo": "rojo", "resultado": "derrota"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Paco Javi": {"goles": 1, "equipo": "rojo", "resultado": "derrota"}, "Carballeira": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Estebán": {"goles": 0, "equipo": "rojo", "resultado": "derrota"}, "Jorge": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Fuentes": {"goles": 1, "equipo": "azul", "resultado": "victoria"}, "Moar": {"goles": 0, "equipo": "azul", "resultado": "victoria"}, "David Castro": {"goles": 2, "equipo": "azul", "resultado": "victoria"}, "Angel": {"goles": 0, "equipo": "azul", "resultado": "victoria"}}}, {"id": 1776384000030, "fecha": "viernes, 17 de abril de 2026", "fechaKey": "2026-04-17", "temporada": "2025/2026", "marcador": {"rojo": 4, "azul": 4}, "equipoRojo": ["Jorge", "Fernando", "Fuentes", "Santi", "Paco Periscal"], "equipoAzul": ["Canabal", "Paco Javi", "Moar", "Aenlys", "Erick"], "goles": {"Jorge": {"goles": 2, "equipo": "rojo", "resultado": "empate"}, "Fernando": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Fuentes": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Santi": {"goles": 0, "equipo": "rojo", "resultado": "empate"}, "Paco Periscal": {"goles": 1, "equipo": "rojo", "resultado": "empate"}, "Canabal": {"goles": 2, "equipo": "azul", "resultado": "empate"}, "Paco Javi": {"goles": 0, "equipo": "azul", "resultado": "empate"}, "Moar": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Aenlys": {"goles": 1, "equipo": "azul", "resultado": "empate"}, "Erick": {"goles": 0, "equipo": "azul", "resultado": "empate"}}}]};
 
-  let state = { jugadores: [], partidos: [] };
+const SKILLS_DEF=[
+  {key:'velocidad',label:'Velocidad y Agilidad',icon:'⚡'},
+  {key:'resistencia',label:'Resistencia',icon:'🫁'},
+  {key:'fuerza',label:'Fuerza y Estabilidad',icon:'💪'},
+  {key:'control',label:'Control y Dominio del Balón',icon:'🎯'},
+  {key:'regate',label:'Regate y Desequilibrio',icon:'🔥'},
+  {key:'portero',label:'Habilidad de Portero',icon:'🧤'},
+];
 
-  // Estado local del formulario de nuevo partido
-  let equipoRojo = [];
-  let equipoAzul = [];
-  let golesJugadores = {};
+let state={jugadores:[],partidos:[]};
+let jugadoresSeleccionados=[];
+let equipoRojo=[];
+let equipoAzul=[];
+let golesJugadores={};
+let pesoSkills=50;
+let viernesActual=proximoViernes(new Date());
+let primeraVez=true;
 
-  // ── UTILIDADES ────────────────────────────────────────
+// ── VIERNES ──
+function proximoViernes(desde){const d=new Date(desde);d.setHours(0,0,0,0);const diff=(5-d.getDay()+7)%7;d.setDate(d.getDate()+diff);return d;}
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function formatViernes(d){return `${DIAS[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;}
+function fechaKey(d){return d.toISOString().slice(0,10);}
 
-  function setSyncStatus(status, msg) {
-    const el = document.getElementById('sync-status');
-    el.style.display = 'block';
-    el.className = 'sync-' + status;
-    el.textContent = msg;
+function validarFecha(){
+  const key=fechaKey(viernesActual);
+  const existe=(state.partidos||[]).some(p=>p.fechaKey===key);
+  const el=document.getElementById('viernes-display');
+  const av=document.getElementById('fecha-aviso');
+  if(existe){
+    el.className='viernes-display fecha-dup';
+    av.className='fecha-aviso error';
+    av.textContent='⚠️ Ya hay un partido registrado en esta fecha';
+    av.style.display='block';
+  } else {
+    el.className='viernes-display fecha-ok';
+    av.className='fecha-aviso ok';
+    av.textContent='✅ Fecha disponible';
+    av.style.display='block';
   }
+  return !existe;
+}
 
-  async function save() {
-    setSyncStatus('saving', '⏳ Guardando...');
-    try {
-      await set(ref(db, 'pachanga'), state);
-      setSyncStatus('ok', '✓ Sincronizado');
-    } catch(e) {
-      setSyncStatus('error', '✗ Error al guardar');
-      toast('❌ Error al guardar');
-    }
-  }
+function renderViernesDisplay(){document.getElementById('viernes-display').textContent=formatViernes(viernesActual);validarFecha();}
+window.cambiarViernes=function(delta){viernesActual=new Date(viernesActual);viernesActual.setDate(viernesActual.getDate()+delta*7);renderViernesDisplay();};
+window.irAViernesHoy=function(){viernesActual=proximoViernes(new Date());renderViernesDisplay();};
 
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-
-  // ── TABS ──────────────────────────────────────────────
-
-  window.setTab = function(tab) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('panel-' + tab).classList.add('active');
-    document.querySelectorAll('.tab')[['nuevo','historial','estadisticas','jugadores'].indexOf(tab)].classList.add('active');
-    if(tab === 'historial')    renderHistorial();
-    if(tab === 'estadisticas') renderEstadisticas();
-    if(tab === 'jugadores')    renderJugadores();
-    if(tab === 'nuevo')        renderFormEquipos();
-  };
-
-  // ── FORMAR EQUIPOS ────────────────────────────────────
-
-  function renderFormEquipos() {
-    const todos = state.jugadores || [];
-
-    // Chips libres
-    const libres = todos.filter(j => !equipoRojo.includes(j) && !equipoAzul.includes(j));
-    const elLibres = document.getElementById('chips-libres');
-    elLibres.innerHTML = libres.length
-      ? libres.map(j => `<span class="chip libre" onclick="toggleJugador('${j}')">${j}</span>`).join('')
-      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Todos asignados ✓</span>`;
-
-    // Chips rojo
-    const elRojo = document.getElementById('chips-rojo');
-    elRojo.innerHTML = equipoRojo.length
-      ? equipoRojo.map(j => `<span class="chip en-rojo" onclick="toggleJugador('${j}')">✕ ${j}</span>`).join('')
-      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
-
-    // Chips azul
-    const elAzul = document.getElementById('chips-azul');
-    elAzul.innerHTML = equipoAzul.length
-      ? equipoAzul.map(j => `<span class="chip en-azul" onclick="toggleJugador('${j}')">✕ ${j}</span>`).join('')
-      : `<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
-
-    document.getElementById('count-rojo').textContent = equipoRojo.length + ' / 5 jugadores';
-    document.getElementById('count-azul').textContent = equipoAzul.length + ' / 5 jugadores';
-
-    // Aviso equipos completos
-    const aviso = document.getElementById('aviso-equipos');
-    if(equipoRojo.length === 5 && equipoAzul.length === 5) {
-      aviso.innerHTML = '<div class="aviso">✅ Equipos completos — anota el marcador y los goles abajo</div>';
-    } else {
-      aviso.innerHTML = '';
-    }
-
-    renderGolesForm();
-  }
-
-  // Ciclo: libre → rojo → azul → libre
-  window.toggleJugador = function(nombre) {
-    if(equipoRojo.includes(nombre)) {
-      // Rojo → Azul
-      equipoRojo = equipoRojo.filter(j => j !== nombre);
-      if(equipoAzul.length < 5) {
-        equipoAzul.push(nombre);
-      } else {
-        toast('⚠️ El Equipo Azul ya tiene 5 jugadores');
-      }
-    } else if(equipoAzul.includes(nombre)) {
-      // Azul → libre
-      equipoAzul = equipoAzul.filter(j => j !== nombre);
-    } else {
-      // Libre → Rojo
-      if(equipoRojo.length < 5) {
-        equipoRojo.push(nombre);
-      } else if(equipoAzul.length < 5) {
-        equipoAzul.push(nombre);
-      } else {
-        toast('⚠️ Los dos equipos ya están completos');
-        return;
-      }
-    }
-    renderFormEquipos();
-  };
-
-  // ── GOLES POR JUGADOR ─────────────────────────────────
-
-  function renderGolesForm() {
-    const el = document.getElementById('goles-por-jugador');
-    if(!equipoRojo.length && !equipoAzul.length) {
-      el.innerHTML = '<div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div>';
-      return;
-    }
-
-    // Inicializar solo jugadores nuevos
-    [...equipoRojo, ...equipoAzul].forEach(j => {
-      if(golesJugadores[j] === undefined) golesJugadores[j] = 0;
-    });
-
-    let html = '';
-
-    if(equipoRojo.length) {
-      html += '<div class="goles-seccion-titulo rojo">🔴 Equipo Rojo</div>';
-      html += '<div class="goles-grid">';
-      html += equipoRojo.map(j => golesItemHTML(j, 'rojo')).join('');
-      html += '</div>';
-    }
-
-    if(equipoAzul.length) {
-      html += '<div class="goles-seccion-titulo azul">🔵 Equipo Azul</div>';
-      html += '<div class="goles-grid">';
-      html += equipoAzul.map(j => golesItemHTML(j, 'azul')).join('');
-      html += '</div>';
-    }
-
-    el.innerHTML = html;
-  }
-
-  function golesItemHTML(j, equipo) {
-    const id = 'gol-' + j.replace(/\s/g, '_');
-    return `
-      <div class="gol-item ${equipo}">
-        <span>${j}</span>
-        <div class="gol-counter">
-          <button onclick="changeGol('${j}',-1)">−</button>
-          <span class="num" id="${id}">${golesJugadores[j] || 0}</span>
-          <button onclick="changeGol('${j}',1)">+</button>
-        </div>
-      </div>`;
-  }
-
-  window.changeGol = function(jugador, delta) {
-    golesJugadores[jugador] = Math.max(0, (golesJugadores[jugador] || 0) + delta);
-    document.getElementById('gol-' + jugador.replace(/\s/g, '_')).textContent = golesJugadores[jugador];
-  };
-
-  // ── GUARDAR PARTIDO ───────────────────────────────────
-
-  window.guardarPartido = function() {
-    const fecha = document.getElementById('fecha-partido').value.trim();
-    if(!fecha) { toast('⚠️ Pon la fecha del partido'); return; }
-    if(!equipoRojo.length || !equipoAzul.length) { toast('⚠️ Forma los dos equipos'); return; }
-
-    const golesR = parseInt(document.getElementById('goles-rojo').value) || 0;
-    const golesA = parseInt(document.getElementById('goles-azul').value) || 0;
-
-    const resRojo = golesR > golesA ? 'victoria' : golesR < golesA ? 'derrota' : 'empate';
-    const resAzul = golesA > golesR ? 'victoria' : golesA < golesR ? 'derrota' : 'empate';
-
-    const goles = {};
-    equipoRojo.forEach(j => { goles[j] = { goles: golesJugadores[j] || 0, equipo: 'rojo', resultado: resRojo }; });
-    equipoAzul.forEach(j => { goles[j] = { goles: golesJugadores[j] || 0, equipo: 'azul', resultado: resAzul }; });
-
-    const partido = {
-      id: Date.now(),
-      fecha,
-      marcador: { rojo: golesR, azul: golesA },
-      equipoRojo: [...equipoRojo],
-      equipoAzul: [...equipoAzul],
-      goles
-    };
-
-    if(!state.partidos) state.partidos = [];
-    state.partidos.unshift(partido);
-    save();
-
-    // Reset formulario
-    equipoRojo = [];
-    equipoAzul = [];
-    golesJugadores = {};
-    document.getElementById('goles-rojo').value = 0;
-    document.getElementById('goles-azul').value = 0;
-    renderFormEquipos();
-    toast('🎉 Partido guardado');
-  };
-
-  // ── HISTORIAL ─────────────────────────────────────────
-
-  function renderHistorial() {
-    const el = document.getElementById('lista-historial');
-    if(!state.partidos || !state.partidos.length) {
-      el.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Todavía no hay partidos registrados</div>';
-      return;
-    }
-
-    el.innerHTML = state.partidos.map(p => {
-      const gr = p.marcador.rojo;
-      const ga = p.marcador.azul;
-
-      let ganadorBadge;
-      if(gr > ga)      ganadorBadge = '<span class="ganador-badge rojo">🔴 Gana Rojo</span>';
-      else if(ga > gr) ganadorBadge = '<span class="ganador-badge azul">🔵 Gana Azul</span>';
-      else             ganadorBadge = '<span class="ganador-badge empate">🤝 Empate</span>';
-
-      const goleadoresRojo = Object.entries(p.goles || {})
-        .filter(([_, v]) => v.equipo === 'rojo' && v.goles > 0)
-        .map(([j, v]) => `<span class="gol-badge rojo">⚽ ${j}: ${v.goles}</span>`).join('');
-
-      const goleadoresAzul = Object.entries(p.goles || {})
-        .filter(([_, v]) => v.equipo === 'azul' && v.goles > 0)
-        .map(([j, v]) => `<span class="gol-badge azul">⚽ ${j}: ${v.goles}</span>`).join('');
-
-      return `
-      <div class="partido-card">
-        <div class="partido-header">
-          <span class="partido-fecha">📅 ${p.fecha}</span>
-          ${ganadorBadge}
-          <button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑 Borrar</button>
-        </div>
-        <div class="marcador-hist">
-          <div class="marcador-equipo">
-            <div class="marcador-equipo-nombre rojo">🔴 Rojo</div>
-            <div class="marcador-num rojo">${gr}</div>
-          </div>
-          <div class="marcador-sep-hist">–</div>
-          <div class="marcador-equipo">
-            <div class="marcador-equipo-nombre azul">🔵 Azul</div>
-            <div class="marcador-num azul">${ga}</div>
-          </div>
-        </div>
-        <div class="goleadores-hist">
-          <div>
-            <div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>
-            ${goleadoresRojo || '<span style="color:var(--gris);font-size:12px">Sin goles</span>'}
-          </div>
-          <div>
-            <div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>
-            ${goleadoresAzul || '<span style="color:var(--gris);font-size:12px">Sin goles</span>'}
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  window.borrarPartido = function(id) {
-    if(!confirm('¿Borrar este partido?')) return;
-    state.partidos = state.partidos.filter(p => p.id !== id);
-    save();
-    renderHistorial();
-    toast('Partido eliminado');
-  };
-
-  // ── ESTADÍSTICAS ──────────────────────────────────────
-
-  function renderEstadisticas() {
-    const partidos = state.partidos || [];
-    const conGanador = partidos.filter(p => p.marcador.rojo !== p.marcador.azul).length;
-    const empates    = partidos.filter(p => p.marcador.rojo === p.marcador.azul).length;
-    const golesTotal = partidos.reduce((a, p) => a + p.marcador.rojo + p.marcador.azul, 0);
-
-    document.getElementById('resumen-global').innerHTML = `
-      <div class="resumen-item"><div class="resumen-num">${partidos.length}</div><div class="resumen-label">Partidos</div></div>
-      <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conGanador}</div><div class="resumen-label">Con ganador</div></div>
-      <div class="resumen-item"><div class="resumen-num" style="color:var(--amarillo)">${empates}</div><div class="resumen-label">Empates</div></div>
-      <div class="resumen-item"><div class="resumen-num">${golesTotal}</div><div class="resumen-label">Goles totales</div></div>
-    `;
-
-    // Estadísticas individuales
-    const stats = {};
-    (state.jugadores || []).forEach(j => {
-      stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 };
-    });
-
-    partidos.forEach(p => {
-      Object.entries(p.goles || {}).forEach(([j, v]) => {
-        if(!stats[j]) stats[j] = { goles: 0, partidos: 0, victorias: 0, empates: 0, derrotas: 0 };
-        stats[j].partidos++;
-        stats[j].goles += v.goles || 0;
-        if(v.resultado === 'victoria')     stats[j].victorias++;
-        else if(v.resultado === 'empate')  stats[j].empates++;
-        else                               stats[j].derrotas++;
-      });
-    });
-
-    const sorted = Object.entries(stats).sort((a, b) => b[1].goles - a[1].goles);
-    const el = document.getElementById('tabla-stats');
-
-    if(!sorted.length || sorted.every(([_, s]) => s.partidos === 0)) {
-      el.innerHTML = '<div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div>';
-      return;
-    }
-
-    el.innerHTML = `
-      <table class="stats-table">
-        <thead>
-          <tr>
-            <th>#</th><th>Jugador</th><th>PJ</th><th>⚽ Goles</th>
-            <th style="color:#4ade80">V</th>
-            <th style="color:var(--amarillo)">E</th>
-            <th style="color:#f87171">D</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sorted.map(([nombre, s], i) => `
-            <tr>
-              <td class="rank-num rank-${i+1}">${i+1}</td>
-              <td class="nombre-cell">${nombre}</td>
-              <td><span class="stat-num">${s.partidos}</span></td>
-              <td><span class="stat-num stat-amarillo">${s.goles}</span></td>
-              <td><span class="stat-num stat-verde">${s.victorias}</span></td>
-              <td><span class="stat-num stat-amarillo">${s.empates}</span></td>
-              <td><span class="stat-num stat-rojo">${s.derrotas}</span></td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    `;
-  }
-
-  // ── JUGADORES ─────────────────────────────────────────
-
-  window.addJugador = function() {
-    const inp = document.getElementById('nuevo-jugador');
-    const nombre = inp.value.trim();
-    if(!nombre) return;
-    if((state.jugadores || []).includes(nombre)) { toast('⚠️ Ya existe ese jugador'); return; }
-    if(!state.jugadores) state.jugadores = [];
-    state.jugadores.push(nombre);
-    save();
-    inp.value = '';
-    renderJugadores();
-    toast('✅ ' + nombre + ' añadido');
-  };
-
-  window.removeJugador = function(nombre) {
-    if(!confirm('¿Eliminar a ' + nombre + ' de la plantilla?')) return;
-    state.jugadores = state.jugadores.filter(j => j !== nombre);
-    save();
-    renderJugadores();
-  };
-
-  function renderJugadores() {
-    const el = document.getElementById('lista-jugadores');
-    if(!(state.jugadores || []).length) {
-      el.innerHTML = '<div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div>';
-      return;
-    }
-    el.innerHTML = state.jugadores.map(j => `
-      <div class="jugador-chip-plantilla">
-        <span>⚽ ${j}</span>
-        <button onclick="removeJugador('${j}')" title="Eliminar">×</button>
-      </div>`).join('');
-  }
-
-  // ── FIREBASE LISTENER ─────────────────────────────────
-
-  onValue(ref(db, 'pachanga'), (snapshot) => {
-    const data = snapshot.val();
-    state = data
-      ? { jugadores: data.jugadores || [], partidos: data.partidos || [] }
-      : { jugadores: [], partidos: [] };
-
-    document.getElementById('loading-overlay').style.display = 'none';
-    setSyncStatus('ok', '✓ Sincronizado');
-
-    const tabs = ['nuevo', 'historial', 'estadisticas', 'jugadores'];
-    const idx  = Array.from(document.querySelectorAll('.tab')).indexOf(document.querySelector('.tab.active'));
-    const tab  = tabs[idx];
-    if(tab === 'historial')    renderHistorial();
-    if(tab === 'estadisticas') renderEstadisticas();
-    if(tab === 'jugadores')    renderJugadores();
-    if(tab === 'nuevo')        renderFormEquipos();
-  }, () => {
-    document.getElementById('loading-overlay').style.display = 'none';
-    setSyncStatus('error', '✗ Sin conexión');
+// ── TEMPORADAS ──
+function getTemporadas(){const ts=new Set((state.partidos||[]).map(p=>p.temporada||TEMPORADA_ACTUAL));ts.add(TEMPORADA_ACTUAL);return Array.from(ts).sort().reverse();}
+function poblarSelectoresTemporada(){
+  const ts=getTemporadas();
+  const html=ts.map(t=>`<option value="${t}">${t}</option>`).join('');
+  ['sel-temporada-resumen','sel-temporada-historial','sel-temporada-stats'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;const val=el.value;el.innerHTML=html;if(val&&ts.includes(val))el.value=val;
   });
+}
+function getTemporadaSel(id){const el=document.getElementById(id);return el?el.value:TEMPORADA_ACTUAL;}
+function filtrarPartidos(id){const t=getTemporadaSel(id);return(state.partidos||[]).filter(p=>(p.temporada||TEMPORADA_ACTUAL)===t);}
+window.onCambioTemporada=function(){renderResumen();};
 
-  // Fecha automática
-  document.getElementById('fecha-partido').value = new Date().toLocaleDateString('es-ES', {
-    weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'
+// ── SLIDER ──
+window.onSliderChange=function(val){pesoSkills=parseInt(val);document.getElementById('pct-skills').textContent=pesoSkills+'%';document.getElementById('pct-hist').textContent=(100-pesoSkills)+'%';document.getElementById('slider-fill').style.width=pesoSkills+'%';};
+
+// ── PUNTUACIÓN ──
+function calcPuntuacion(nombre){
+  const j=(state.jugadores||[]).find(j=>j.nombre===nombre);
+  let skillScore=0;
+  if(j&&j.skills){const vals=SKILLS_DEF.map(s=>j.skills[s.key]||0);skillScore=(vals.reduce((a,b)=>a+b,0)/vals.length/5)*10;}
+  const registros=(state.partidos||[]).flatMap(p=>Object.entries(p.goles||{}).filter(([n])=>n===nombre).map(([_,v])=>v));
+  let histScore=0;
+  if(registros.length>0){const tG=registros.reduce((a,v)=>a+(v.goles||0),0);const vic=registros.filter(v=>v.resultado==='victoria').length;histScore=Math.min((vic/registros.length)*5,5)+Math.min((tG/registros.length/3)*5,5);}
+  else histScore=skillScore*0.5;
+  return parseFloat(((skillScore*(pesoSkills/100))+(histScore*((100-pesoSkills)/100))).toFixed(2));
+}
+
+// ── MOTOR IA ──
+window.equilibrarEquipos=function(){
+  if(jugadoresSeleccionados.length!==10){toast('⚠️ Selecciona exactamente 10 jugadores');return;}
+  const conPuntos=jugadoresSeleccionados.map(n=>({nombre:n,pts:calcPuntuacion(n)})).sort((a,b)=>b.pts-a.pts);
+  const patron=['rojo','azul','azul','rojo','rojo','azul','azul','rojo','rojo','azul'];
+  const nR=[],nA=[];
+  conPuntos.forEach((j,i)=>{if(patron[i]==='rojo')nR.push(j.nombre);else nA.push(j.nombre);});
+  const tR=nR.reduce((a,n)=>a+conPuntos.find(j=>j.nombre===n).pts,0);
+  const tA=nA.reduce((a,n)=>a+conPuntos.find(j=>j.nombre===n).pts,0);
+  const dif=Math.abs(tR-tA).toFixed(2);
+  const tot=tR+tA;const pct=tot>0?((tR/tot)*100).toFixed(0):50;
+  const topR=conPuntos.filter(j=>nR.includes(j.nombre)).sort((a,b)=>b.pts-a.pts)[0];
+  const topA=conPuntos.filter(j=>nA.includes(j.nombre)).sort((a,b)=>b.pts-a.pts)[0];
+  const fTxt=pesoSkills>=70?'priorizando skills':pesoSkills<=30?'priorizando historial':`skills ${pesoSkills}% / historial ${100-pesoSkills}%`;
+  const com=`Reparto por método serpentín (${fTxt}). Diferencia: <strong>${dif} pts</strong>. Referentes: <strong>${topR.nombre}</strong> (Rojo) y <strong>${topA.nombre}</strong> (Azul).`;
+  const pm=Object.fromEntries(conPuntos.map(j=>[j.nombre,j.pts]));
+  const rH=(n,eq)=>`<div class="ia-jugador-row"><span class="ia-jugador-nombre">${n}</span><span class="ia-jugador-pts">${pm[n]}</span><button class="ia-jugador-mover" onclick="moverJugadorIA('${n}','${eq}')">⇄</button></div>`;
+  document.getElementById('ia-resultado').style.display='block';
+  document.getElementById('ia-resultado').innerHTML=`<div class="ia-resultado"><div class="ia-titulo">🤖 Reparto Sugerido</div><div class="ia-comentario">${com}</div><div class="ia-equipos-grid"><div class="ia-equipo-box rojo"><div class="ia-equipo-titulo rojo">🔴 Equipo Rojo <span class="ia-equipo-pts">${tR.toFixed(1)} pts</span></div><div id="ia-lista-rojo">${nR.map(n=>rH(n,'rojo')).join('')}</div></div><div class="ia-equipo-box azul"><div class="ia-equipo-titulo azul">🔵 Equipo Azul <span class="ia-equipo-pts">${tA.toFixed(1)} pts</span></div><div id="ia-lista-azul">${nA.map(n=>rH(n,'azul')).join('')}</div></div></div><div class="ia-balance"><span style="color:#f87171;font-size:12px">🔴 ${pct}%</span><div class="balance-bar-wrap"><div class="balance-bar" style="width:${pct}%;background:linear-gradient(90deg,#c0392b,#1a5fa0)"></div></div><span style="color:#60a5fa;font-size:12px">${100-pct}% 🔵</span></div><button class="btn btn-verde" style="width:100%;margin-top:14px" onclick="aplicarRepartoIA()">✅ USAR ESTE REPARTO</button></div>`;
+  window._iaRojo=[...nR];window._iaAzul=[...nA];window._iaPtsMap=pm;
+};
+
+window.moverJugadorIA=function(nombre,eq){
+  if(eq==='rojo'){window._iaRojo=window._iaRojo.filter(n=>n!==nombre);window._iaAzul.push(nombre);}
+  else{window._iaAzul=window._iaAzul.filter(n=>n!==nombre);window._iaRojo.push(nombre);}
+  const pm=window._iaPtsMap;
+  const tR=window._iaRojo.reduce((a,n)=>a+(pm[n]||0),0);
+  const tA=window._iaAzul.reduce((a,n)=>a+(pm[n]||0),0);
+  const pct=((tR/(tR+tA))*100).toFixed(0);
+  const rH=(n,eq)=>`<div class="ia-jugador-row"><span class="ia-jugador-nombre">${n}</span><span class="ia-jugador-pts">${pm[n]}</span><button class="ia-jugador-mover" onclick="moverJugadorIA('${n}','${eq}')">⇄</button></div>`;
+  document.getElementById('ia-lista-rojo').innerHTML=window._iaRojo.map(n=>rH(n,'rojo')).join('');
+  document.getElementById('ia-lista-azul').innerHTML=window._iaAzul.map(n=>rH(n,'azul')).join('');
+  document.querySelector('.ia-equipo-box.rojo .ia-equipo-pts').textContent=tR.toFixed(1)+' pts';
+  document.querySelector('.ia-equipo-box.azul .ia-equipo-pts').textContent=tA.toFixed(1)+' pts';
+  document.querySelector('.balance-bar').style.width=pct+'%';
+  document.querySelectorAll('.ia-balance span')[0].textContent='🔴 '+pct+'%';
+  document.querySelectorAll('.ia-balance span')[1].textContent=(100-pct)+'% 🔵';
+};
+
+window.aplicarRepartoIA=function(){equipoRojo=[...window._iaRojo];equipoAzul=[...window._iaAzul];renderFormEquipos();toast('✅ Reparto aplicado');document.getElementById('ia-resultado').style.display='none';};
+
+// ── SELECCIÓN 10 ──
+function renderSeleccionJugadores(){
+  const el=document.getElementById('seleccion-jugadores');
+  const jugadores=state.jugadores||[];
+  if(!jugadores.length){el.innerHTML='<span style="color:var(--gris);font-size:13px">Añade jugadores en la pestaña Jugadores</span>';return;}
+  el.innerHTML=jugadores.map(j=>{
+    const sel=jugadoresSeleccionados.includes(j.nombre);
+    const pts=calcPuntuacion(j.nombre);
+    return `<span class="sel-chip ${sel?'seleccionado':'inactivo'}" onclick="toggleSeleccion('${j.nombre}')">${j.nombre}<span class="sel-score">${pts}</span></span>`;
+  }).join('');
+  document.getElementById('sel-count').innerHTML=`Seleccionados: <span>${jugadoresSeleccionados.length}</span> / 10`;
+}
+window.toggleSeleccion=function(nombre){
+  if(jugadoresSeleccionados.includes(nombre))jugadoresSeleccionados=jugadoresSeleccionados.filter(n=>n!==nombre);
+  else{if(jugadoresSeleccionados.length>=10){toast('⚠️ Ya tienes 10');return;}jugadoresSeleccionados.push(nombre);}
+  equipoRojo=equipoRojo.filter(n=>jugadoresSeleccionados.includes(n));
+  equipoAzul=equipoAzul.filter(n=>jugadoresSeleccionados.includes(n));
+  renderSeleccionJugadores();renderFormEquipos();
+};
+
+// ── EQUIPOS ──
+function renderFormEquipos(){
+  const libres=jugadoresSeleccionados.filter(n=>!equipoRojo.includes(n)&&!equipoAzul.includes(n));
+  document.getElementById('chips-libres').innerHTML=libres.length?libres.map(n=>`<span class="chip libre" onclick="toggleJugador('${n}')">${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">${jugadoresSeleccionados.length?'Todos asignados ✓':'Selecciona jugadores arriba'}</span>`;
+  document.getElementById('chips-rojo').innerHTML=equipoRojo.length?equipoRojo.map(n=>`<span class="chip en-rojo" onclick="toggleJugador('${n}')">✕ ${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
+  document.getElementById('chips-azul').innerHTML=equipoAzul.length?equipoAzul.map(n=>`<span class="chip en-azul" onclick="toggleJugador('${n}')">✕ ${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
+  document.getElementById('count-rojo').textContent=equipoRojo.length+' / 5 jugadores';
+  document.getElementById('count-azul').textContent=equipoAzul.length+' / 5 jugadores';
+  document.getElementById('aviso-equipos').innerHTML=(equipoRojo.length===5&&equipoAzul.length===5)?'<div class="aviso">✅ Equipos completos — anota los goles abajo</div>':'';
+  renderGolesForm();
+}
+window.toggleJugador=function(nombre){
+  if(equipoRojo.includes(nombre)){equipoRojo=equipoRojo.filter(n=>n!==nombre);if(equipoAzul.length<5)equipoAzul.push(nombre);else toast('⚠️ Azul ya tiene 5');}
+  else if(equipoAzul.includes(nombre)){equipoAzul=equipoAzul.filter(n=>n!==nombre);}
+  else{if(equipoRojo.length<5)equipoRojo.push(nombre);else if(equipoAzul.length<5)equipoAzul.push(nombre);else{toast('⚠️ Equipos completos');return;}}
+  renderFormEquipos();
+};
+
+// ── GOLES + MARCADOR AUTO ──
+function actualizarMarcadorAuto(){
+  document.getElementById('marcador-auto-rojo').textContent=equipoRojo.reduce((a,n)=>a+(golesJugadores[n]||0),0);
+  document.getElementById('marcador-auto-azul').textContent=equipoAzul.reduce((a,n)=>a+(golesJugadores[n]||0),0);
+}
+function renderGolesForm(){
+  const el=document.getElementById('goles-por-jugador');
+  const wrap=document.getElementById('marcador-auto-wrap');
+  if(!equipoRojo.length&&!equipoAzul.length){el.innerHTML='<div class="empty-state"><span class="icon">👕</span>Forma los equipos primero</div>';wrap.style.display='none';return;}
+  [...equipoRojo,...equipoAzul].forEach(n=>{if(golesJugadores[n]===undefined)golesJugadores[n]=0;});
+  let html='';
+  if(equipoRojo.length){html+='<div class="goles-seccion-titulo rojo">🔴 Equipo Rojo</div><div class="goles-grid">'+equipoRojo.map(n=>golesItemHTML(n,'rojo')).join('')+'</div>';}
+  if(equipoAzul.length){html+='<div class="goles-seccion-titulo azul">🔵 Equipo Azul</div><div class="goles-grid">'+equipoAzul.map(n=>golesItemHTML(n,'azul')).join('')+'</div>';}
+  el.innerHTML=html;wrap.style.display='block';actualizarMarcadorAuto();
+}
+function golesItemHTML(n,eq){return `<div class="gol-item ${eq}"><span>${n}</span><div class="gol-counter"><button onclick="changeGol('${n}',-1)">−</button><span class="num" id="gol-${n.replace(/\s/g,'_')}">${golesJugadores[n]||0}</span><button onclick="changeGol('${n}',1)">+</button></div></div>`;}
+window.changeGol=function(n,delta){golesJugadores[n]=Math.max(0,(golesJugadores[n]||0)+delta);document.getElementById('gol-'+n.replace(/\s/g,'_')).textContent=golesJugadores[n];actualizarMarcadorAuto();};
+
+// ── GUARDAR PARTIDO ──
+window.guardarPartido=function(){
+  if(!validarFecha()){toast('⚠️ Ya hay un partido en esta fecha');return;}
+  if(!equipoRojo.length||!equipoAzul.length){toast('⚠️ Forma los dos equipos');return;}
+  const key=fechaKey(viernesActual);
+  const golesR=equipoRojo.reduce((a,n)=>a+(golesJugadores[n]||0),0);
+  const golesA=equipoAzul.reduce((a,n)=>a+(golesJugadores[n]||0),0);
+  const resR=golesR>golesA?'victoria':golesR<golesA?'derrota':'empate';
+  const resA=golesA>golesR?'victoria':golesA<golesR?'derrota':'empate';
+  const goles={};
+  equipoRojo.forEach(n=>{goles[n]={goles:golesJugadores[n]||0,equipo:'rojo',resultado:resR};});
+  equipoAzul.forEach(n=>{goles[n]={goles:golesJugadores[n]||0,equipo:'azul',resultado:resA};});
+  if(!state.partidos)state.partidos=[];
+  state.partidos.unshift({id:Date.now(),fecha:formatViernes(viernesActual),fechaKey:key,temporada:TEMPORADA_ACTUAL,marcador:{rojo:golesR,azul:golesA},equipoRojo:[...equipoRojo],equipoAzul:[...equipoAzul],goles});
+  save();
+  equipoRojo=[];equipoAzul=[];golesJugadores={};jugadoresSeleccionados=[];
+  document.getElementById('ia-resultado').style.display='none';
+  document.getElementById('marcador-auto-wrap').style.display='none';
+  renderSeleccionJugadores();renderFormEquipos();renderViernesDisplay();
+  toast('🎉 Partido guardado');
+};
+
+// ── HISTORIAL ──
+function renderHistorial(){
+  const el=document.getElementById('lista-historial');
+  const partidos=filtrarPartidos('sel-temporada-historial');
+  if(!partidos.length){el.innerHTML='<div class="empty-state"><span class="icon">📭</span>No hay partidos en esta temporada</div>';return;}
+  el.innerHTML=partidos.map(p=>{
+    const gr=p.marcador.rojo,ga=p.marcador.azul;
+    const badge=gr>ga?'<span class="ganador-badge rojo">🔴 Gana Rojo</span>':ga>gr?'<span class="ganador-badge azul">🔵 Gana Azul</span>':'<span class="ganador-badge empate">🤝 Empate</span>';
+    const gR=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='rojo'&&v.goles>0).map(([n,v])=>`<span class="gol-badge rojo">⚽ ${n}: ${v.goles}</span>`).join('');
+    const gA=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='azul'&&v.goles>0).map(([n,v])=>`<span class="gol-badge azul">⚽ ${n}: ${v.goles}</span>`).join('');
+    return `<div class="partido-card"><div class="partido-header"><span class="partido-fecha">📅 ${p.fecha}</span><span class="temporada-tag">${p.temporada||TEMPORADA_ACTUAL}</span>${badge}<button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑</button></div><div class="marcador-hist"><div class="marcador-equipo"><div class="marcador-equipo-nombre rojo">🔴 Rojo</div><div class="marcador-num rojo">${gr}</div></div><div class="marcador-sep-hist">–</div><div class="marcador-equipo"><div class="marcador-equipo-nombre azul">🔵 Azul</div><div class="marcador-num azul">${ga}</div></div></div><div class="goleadores-hist"><div><div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>${gR||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div><div><div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>${gA||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div></div></div>`;
+  }).join('');
+}
+window.borrarPartido=function(id){if(!confirm('¿Borrar?'))return;state.partidos=state.partidos.filter(p=>p.id!==id);save();renderHistorial();toast('Partido eliminado');};
+
+// ── ESTADÍSTICAS ──
+function calcStats(partidos){
+  const stats={};
+  (state.jugadores||[]).forEach(j=>{stats[j.nombre]={goles:0,partidos:0,victorias:0,empates:0,derrotas:0,golesRojo:0,golesAzul:0,partidosRojo:0,partidosAzul:0,vicRojo:0,vicAzul:0};});
+  partidos.forEach(p=>{
+    Object.entries(p.goles||{}).forEach(([n,v])=>{
+      if(!stats[n])stats[n]={goles:0,partidos:0,victorias:0,empates:0,derrotas:0,golesRojo:0,golesAzul:0,partidosRojo:0,partidosAzul:0,vicRojo:0,vicAzul:0};
+      stats[n].partidos++;stats[n].goles+=v.goles||0;
+      if(v.resultado==='victoria')stats[n].victorias++;else if(v.resultado==='empate')stats[n].empates++;else stats[n].derrotas++;
+      if(v.equipo==='rojo'){stats[n].golesRojo+=v.goles||0;stats[n].partidosRojo++;if(v.resultado==='victoria')stats[n].vicRojo++;}
+      else{stats[n].golesAzul+=v.goles||0;stats[n].partidosAzul++;if(v.resultado==='victoria')stats[n].vicAzul++;}
+    });
   });
+  return stats;
+}
 
+function renderEstadisticas(){
+  const partidos=filtrarPartidos('sel-temporada-stats');
+  const conG=partidos.filter(p=>p.marcador.rojo!==p.marcador.azul).length;
+  const emp=partidos.filter(p=>p.marcador.rojo===p.marcador.azul).length;
+  const golesT=partidos.reduce((a,p)=>a+p.marcador.rojo+p.marcador.azul,0);
+  document.getElementById('resumen-global').innerHTML=`
+    <div class="resumen-item"><div class="resumen-num">${partidos.length}</div><div class="resumen-label">Partidos</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conG}</div><div class="resumen-label">Con ganador</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:var(--amarillo)">${emp}</div><div class="resumen-label">Empates</div></div>
+    <div class="resumen-item"><div class="resumen-num">${golesT}</div><div class="resumen-label">Goles totales</div></div>`;
+  const stats=calcStats(partidos);
+  const sorted=Object.entries(stats).filter(([_,s])=>s.partidos>0).sort((a,b)=>b[1].goles-a[1].goles);
+  const el=document.getElementById('tabla-stats');
+  if(!sorted.length){el.innerHTML='<div class="empty-state"><span class="icon">📊</span>Sin datos todavía</div>';return;}
+  el.innerHTML=`<table class="stats-table"><thead><tr><th>#</th><th>Jugador</th><th>PJ</th><th>⚽</th><th>Avg</th><th style="color:#4ade80">V</th><th style="color:var(--amarillo)">E</th><th style="color:#f87171">D</th></tr></thead><tbody>
+    ${sorted.map(([nombre,s],i)=>{const avg=(s.goles/s.partidos).toFixed(2);return `<tr><td class="rank-num rank-${i+1}">${i+1}</td><td class="nombre-cell">${nombre}</td><td><span class="stat-num">${s.partidos}</span></td><td><span class="stat-num stat-amarillo">${s.goles}</span></td><td><span class="stat-num" style="color:#a0d4b0;font-size:16px">${avg}</span></td><td><span class="stat-num stat-verde">${s.victorias}</span></td><td><span class="stat-num stat-amarillo">${s.empates}</span></td><td><span class="stat-num stat-rojo">${s.derrotas}</span></td></tr>`;}).join('')}
+  </tbody></table>`;
+}
+
+// ── KPIs RESUMEN ──
+function renderResumen(){
+  const partidos=filtrarPartidos('sel-temporada-resumen');
+  const temporada=getTemporadaSel('sel-temporada-resumen');
+  document.getElementById('temporada-header').textContent='Temporada '+temporada;
+  const stats=calcStats(partidos);
+  const jugadores=Object.entries(stats).filter(([_,s])=>s.partidos>0);
+  if(!jugadores.length){
+    document.getElementById('kpi-hero-wrap').innerHTML='';
+    document.getElementById('resumen-temporada').innerHTML='<div class="empty-state"><span class="icon">📊</span>Sin datos en esta temporada</div>';
+    return;
+  }
+  // KPIs
+  const pichichi=jugadores.sort((a,b)=>b[1].goles-a[1].goles)[0];
+  const masGanador=jugadores.sort((a,b)=>b[1].victorias-a[1].victorias)[0];
+  const pRojo=jugadores.filter(([_,s])=>s.partidosRojo>0).sort((a,b)=>b[1].golesRojo-a[1].golesRojo)[0];
+  const pAzul=jugadores.filter(([_,s])=>s.partidosAzul>0).sort((a,b)=>b[1].golesAzul-a[1].golesAzul)[0];
+  const mGanRojo=jugadores.filter(([_,s])=>s.partidosRojo>=2).sort((a,b)=>(b[1].vicRojo/b[1].partidosRojo)-(a[1].vicRojo/a[1].partidosRojo))[0];
+  const mGanAzul=jugadores.filter(([_,s])=>s.partidosAzul>=2).sort((a,b)=>(b[1].vicAzul/b[1].partidosAzul)-(a[1].vicAzul/a[1].partidosAzul))[0];
+  const masEquil=jugadores.sort((a,b)=>b[1].empates-a[1].empates)[0];
+  const masEstable=jugadores.filter(([_,s])=>s.partidos>=3).sort((a,b)=>{const dA=Math.abs(a[1].victorias-a[1].derrotas)/a[1].partidos;const dB=Math.abs(b[1].victorias-b[1].derrotas)/b[1].partidos;return dA-dB;})[0];
+  const masActivo=jugadores.sort((a,b)=>b[1].partidos-a[1].partidos)[0];
+  // Mejor average (mínimo 5 partidos)
+  const mejorAvg=jugadores.filter(([_,s])=>s.partidos>=5).sort((a,b)=>(b[1].goles/b[1].partidos)-(a[1].goles/a[1].partidos))[0];
+
+  const kpis=[
+    {icon:'⚽',titulo:'Pichichi',nombre:pichichi?.[0]||'—',valor:pichichi?`${pichichi[1].goles} goles`:'',color:'oro'},
+    {icon:'📈',titulo:'Mejor Average',nombre:mejorAvg?.[0]||'—',valor:mejorAvg?`${(mejorAvg[1].goles/mejorAvg[1].partidos).toFixed(2)} goles/partido`:'',color:'purple-card'},
+    {icon:'🏆',titulo:'Más Ganador',nombre:masGanador?.[0]||'—',valor:masGanador?`${masGanador[1].victorias} victorias`:'',color:'verde-card'},
+    {icon:'🔴⚽',titulo:'Pichichi Rojo',nombre:pRojo?.[0]||'—',valor:pRojo?`${pRojo[1].golesRojo} goles`:'',color:'rojo-card'},
+    {icon:'🔵⚽',titulo:'Pichichi Azul',nombre:pAzul?.[0]||'—',valor:pAzul?`${pAzul[1].golesAzul} goles`:'',color:'azul-card'},
+    {icon:'🔴🏆',titulo:'Más Ganador Rojo',nombre:mGanRojo?.[0]||'—',valor:mGanRojo?`${mGanRojo[1].vicRojo}/${mGanRojo[1].partidosRojo}`:'',color:'rojo-card'},
+    {icon:'🔵🏆',titulo:'Más Ganador Azul',nombre:mGanAzul?.[0]||'—',valor:mGanAzul?`${mGanAzul[1].vicAzul}/${mGanAzul[1].partidosAzul}`:'',color:'azul-card'},
+    {icon:'⚖️',titulo:'Más Equilibrado',nombre:masEquil?.[0]||'—',valor:masEquil?`${masEquil[1].empates} empates`:'',color:'gris-card'},
+    {icon:'📊',titulo:'Más Estable',nombre:masEstable?.[0]||'—',valor:masEstable?`${masEstable[1].victorias}V ${masEstable[1].empates}E ${masEstable[1].derrotas}D`:'',color:'verde-card'},
+    {icon:'👟',titulo:'Más Participativo',nombre:masActivo?.[0]||'—',valor:masActivo?`${masActivo[1].partidos} partidos`:'',color:'oro'},
+  ];
+
+  document.getElementById('kpi-hero-wrap').innerHTML=`<div class="kpi-hero">${kpis.map(k=>`<div class="kpi-card ${k.color}"><span class="kpi-icon">${k.icon}</span><div class="kpi-titulo">${k.titulo}</div><div class="kpi-nombre">${k.nombre}</div><div class="kpi-valor"><span>${k.valor}</span></div></div>`).join('')}</div>`;
+
+  const conG=partidos.filter(p=>p.marcador.rojo!==p.marcador.azul).length;
+  const emp=partidos.filter(p=>p.marcador.rojo===p.marcador.azul).length;
+  const golesT=partidos.reduce((a,p)=>a+p.marcador.rojo+p.marcador.azul,0);
+  const vicR=partidos.filter(p=>p.marcador.rojo>p.marcador.azul).length;
+  const vicA=partidos.filter(p=>p.marcador.azul>p.marcador.rojo).length;
+  document.getElementById('resumen-temporada').innerHTML=`
+    <div class="resumen-item"><div class="resumen-num">${partidos.length}</div><div class="resumen-label">Partidos</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conG}</div><div class="resumen-label">Con ganador</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:var(--amarillo)">${emp}</div><div class="resumen-label">Empates</div></div>
+    <div class="resumen-item"><div class="resumen-num">${golesT}</div><div class="resumen-label">Goles totales</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:#f87171">${vicR}</div><div class="resumen-label">Victorias Rojo</div></div>
+    <div class="resumen-item"><div class="resumen-num" style="color:#60a5fa">${vicA}</div><div class="resumen-label">Victorias Azul</div></div>`;
+}
+
+// ── JUGADORES ──
+function jugadorById(id){return(state.jugadores||[]).find(j=>j.id===id);}
+window.addJugador=function(){const inp=document.getElementById('nuevo-jugador');const nombre=inp.value.trim();if(!nombre)return;if((state.jugadores||[]).some(j=>j.nombre===nombre)){toast('⚠️ Ya existe');return;}if(!state.jugadores)state.jugadores=[];state.jugadores.push({id:Date.now().toString(),nombre,skills:{velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0}});save();inp.value='';renderJugadores();toast('✅ '+nombre+' añadido');};
+window.removeJugador=function(id){const j=jugadorById(id);if(!j)return;if(!confirm('¿Eliminar a '+j.nombre+'?'))return;state.jugadores=state.jugadores.filter(j=>j.id!==id);save();renderJugadores();};
+window.toggleEditNombre=function(id){
+  const tE=document.getElementById('nombre-text-'+id),iE=document.getElementById('nombre-input-'+id),bE=document.getElementById('nombre-btn-'+id);
+  if(iE.style.display==='none'||!iE.style.display){iE.style.display='block';tE.style.display='none';iE.value=tE.textContent;iE.focus();bE.textContent='✓ Guardar';}
+  else{const nn=iE.value.trim();if(!nn){toast('⚠️ Nombre vacío');return;}if((state.jugadores||[]).some(j=>j.nombre===nn&&j.id!==id)){toast('⚠️ Ya existe');return;}const old=jugadorById(id).nombre;state.jugadores=state.jugadores.map(j=>j.id===id?{...j,nombre:nn}:j);(state.partidos||[]).forEach(p=>{if(p.goles&&p.goles[old]){p.goles[nn]=p.goles[old];delete p.goles[old];}if(p.equipoRojo)p.equipoRojo=p.equipoRojo.map(n=>n===old?nn:n);if(p.equipoAzul)p.equipoAzul=p.equipoAzul.map(n=>n===old?nn:n);});save();iE.style.display='none';tE.style.display='inline';tE.textContent=nn;bE.textContent='✏️ Editar';toast('✅ Nombre actualizado');}
+};
+window.setSkill=function(id,sk,val){const j=jugadorById(id);if(!j)return;if(!j.skills)j.skills={};j.skills[sk]=j.skills[sk]===val?0:val;state.jugadores=state.jugadores.map(jj=>jj.id===id?j:jj);save();renderStarsJugador(id);};
+function renderStarsJugador(id){const j=jugadorById(id);if(!j)return;SKILLS_DEF.forEach(s=>{const val=(j.skills&&j.skills[s.key])||0;for(let i=1;i<=5;i++){const el=document.getElementById(`star-${id}-${s.key}-${i}`);if(el)el.className='star '+(i<=val?'filled':'empty');}});}
+function skillsHTML(j){return `<div class="skills-grid">${SKILLS_DEF.map(s=>{const val=(j.skills&&j.skills[s.key])||0;const stars=[1,2,3,4,5].map(i=>`<span class="star ${i<=val?'filled':'empty'}" id="star-${j.id}-${s.key}-${i}" onclick="setSkill('${j.id}','${s.key}',${i})">★</span>`).join('');return `<div class="skill-row"><div class="skill-label">${s.icon} ${s.label}</div><div class="skill-stars">${stars}</div></div>`;}).join('')}</div>`;}
+function renderJugadores(){
+  const el=document.getElementById('lista-jugadores');
+  if(!(state.jugadores||[]).length){el.innerHTML='<div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div>';return;}
+  el.innerHTML=state.jugadores.map(j=>`<div class="jugador-card"><div class="jugador-card-header"><div class="jugador-nombre-wrap"><span>⚽</span><span class="jugador-nombre-text" id="nombre-text-${j.id}">${j.nombre}</span><input class="jugador-nombre-input" id="nombre-input-${j.id}" type="text" value="${j.nombre}"></div><div class="jugador-acciones"><button class="btn btn-ghost" id="nombre-btn-${j.id}" onclick="toggleEditNombre('${j.id}')">✏️ Editar</button><button class="btn btn-rojo" onclick="removeJugador('${j.id}')">🗑</button></div></div>${skillsHTML(j)}</div>`).join('');
+}
+
+// ── TABS ──
+window.setTab=function(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.querySelectorAll('.tab')[['resumen','nuevo','historial','estadisticas','jugadores'].indexOf(tab)].classList.add('active');
+  poblarSelectoresTemporada();
+  if(tab==='resumen')renderResumen();
+  if(tab==='historial')renderHistorial();
+  if(tab==='estadisticas')renderEstadisticas();
+  if(tab==='jugadores')renderJugadores();
+  if(tab==='nuevo'){renderSeleccionJugadores();renderFormEquipos();}
+};
+
+// ── UTILS ──
+function setSyncStatus(s,m){const el=document.getElementById('sync-status');el.style.display='block';el.className='sync-'+s;el.textContent=m;}
+async function save(){setSyncStatus('saving','⏳ Guardando...');try{await set(ref(db,'pachanga'),state);setSyncStatus('ok','✓ Sincronizado');}catch(e){setSyncStatus('error','✗ Error');toast('❌ Error al guardar');}}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── FIREBASE ──
+onValue(ref(db,'pachanga'),(snapshot)=>{
+  const data=snapshot.val();
+  if(primeraVez && (!data || !data.partidos || data.partidos.length===0)){
+    // Cargar datos iniciales del Excel
+    state=JSON.parse(JSON.stringify(DATOS_INICIALES));
+    state.jugadores=state.jugadores.map(j=>{if(!j.skills)j.skills={velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0};if(j.skills.portero===undefined)j.skills.portero=0;return j;});
+    save();
+  } else {
+    let jugadores=(data&&data.jugadores)?data.jugadores:[];
+    jugadores=jugadores.map(j=>{if(typeof j==='string')return{id:Math.random().toString(36).slice(2),nombre:j,skills:{velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0}};if(!j.skills)j.skills={velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0};if(j.skills.portero===undefined)j.skills.portero=0;return j;});
+    let partidos=(data&&data.partidos)||[];
+    partidos=partidos.map(p=>{if(!p.temporada)p.temporada=TEMPORADA_ACTUAL;if(!p.fechaKey)p.fechaKey='';return p;});
+    state={jugadores,partidos};
+  }
+  primeraVez=false;
+  document.getElementById('loading-overlay').style.display='none';
+  setSyncStatus('ok','✓ Sincronizado');
+  poblarSelectoresTemporada();
+  const tabs=['resumen','nuevo','historial','estadisticas','jugadores'];
+  const idx=Array.from(document.querySelectorAll('.tab')).indexOf(document.querySelector('.tab.active'));
+  const tab=tabs[idx];
+  if(tab==='resumen')renderResumen();
+  if(tab==='historial')renderHistorial();
+  if(tab==='estadisticas')renderEstadisticas();
+  if(tab==='jugadores')renderJugadores();
+  if(tab==='nuevo'){renderSeleccionJugadores();renderFormEquipos();}
+},()=>{document.getElementById('loading-overlay').style.display='none';setSyncStatus('error','✗ Sin conexión');});
+
+renderViernesDisplay();
 </script>
 </body>
 </html>
