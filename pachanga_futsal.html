@@ -71,6 +71,23 @@ input:focus,select:focus{outline:none;border-color:var(--verde-claro);}
 .fecha-aviso{border-radius:8px;padding:10px 14px;font-size:13px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;margin-top:10px;display:none;}
 .fecha-aviso.error{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f87171;}
 .fecha-aviso.ok{background:rgba(26,122,60,.12);border:1px solid var(--verde);color:#4ade80;}
+
+/* Modal edición */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal{background:var(--tarjeta);border:1px solid var(--borde);border-radius:14px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--amarillo);margin-bottom:16px;}
+.modal-seccion{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);margin:14px 0 6px;}
+.modal-marcador{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.modal-marcador input{width:60px;min-width:60px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:24px;padding:4px 8px;}
+.modal-sep{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gris);}
+.modal-goles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
+.modal-gol-item{background:var(--fondo);border:1px solid var(--borde);border-radius:8px;padding:8px;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.modal-gol-item.rojo{border-color:rgba(192,57,43,.4);}
+.modal-gol-item.azul{border-color:rgba(26,95,160,.4);}
+.modal-gol-item span{font-size:13px;font-weight:600;flex:1;}
+.modal-gol-item input{width:48px;min-width:48px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:20px;padding:2px 6px;}
+.modal-btns{display:flex;gap:10px;margin-top:18px;}
+.modal-btns .btn{flex:1;}
 /* Selección jugadores */
 .seleccion-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
 .sel-chip{border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px;}
@@ -204,6 +221,23 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .star.filled{color:var(--amarillo);text-shadow:0 0 8px rgba(245,197,24,.5);}
 .star.empty{color:#2a3f2e;}
 .empty-state{text-align:center;padding:40px;color:var(--gris);font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── MVPs ── */
+.mvp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:24px;}
+.mvp-card{background:var(--tarjeta);border-radius:14px;padding:20px;position:relative;overflow:hidden;border:1px solid var(--borde);}
+.mvp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+.mvp-card.partido::before{background:linear-gradient(90deg,#f5c518,#ffd740);}
+.mvp-card.mes::before{background:linear-gradient(90deg,#9333ea,#c084fc);}
+.mvp-card.temporada::before{background:linear-gradient(90deg,#06b6d4,#38bdf8);}
+.mvp-corona{font-size:32px;display:block;margin-bottom:6px;}
+.mvp-tipo{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris);margin-bottom:4px;}
+.mvp-nombre{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--blanco);line-height:1.1;margin-bottom:4px;}
+.mvp-pts{font-family:'Bebas Neue',sans-serif;font-size:17px;}
+.mvp-pts.partido{color:var(--amarillo);}
+.mvp-pts.mes{color:#c084fc;}
+.mvp-pts.temporada{color:#38bdf8;}
+.mvp-detalle{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--gris);margin-top:8px;line-height:1.6;}
+.mvp-formula{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#3a4a3e;margin-top:8px;padding-top:8px;border-top:1px solid var(--borde);}
 .empty-state .icon{font-size:40px;display:block;margin-bottom:10px;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde);color:white;padding:12px 24px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;z-index:1000;transition:transform .3s ease;}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -239,6 +273,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       <label>Temporada:</label>
       <select id="sel-temporada-resumen" onchange="onCambioTemporada()"></select>
     </div>
+    <div id="mvp-wrap"></div>
     <div id="kpi-hero-wrap"></div>
     <div class="card"><h2>📈 Resumen de Temporada</h2><div class="resumen-grid" id="resumen-temporada"></div></div>
   </div>
@@ -257,7 +292,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
     </div>
     <div class="card">
       <h2>🧑‍🤝‍🧑 Los 10 de Hoy</h2>
-      <p style="color:var(--gris);font-size:13px;margin-bottom:4px">Selecciona exactamente 10 jugadores.</p>
+      <p style="color:var(--gris);font-size:13px;margin-bottom:4px">Selecciona jugadores en número par (máx. 10) para formar equipos iguales.</p>
       <div class="seleccion-grid" id="seleccion-jugadores"></div>
       <div class="sel-count" id="sel-count">Seleccionados: <span>0</span> / 10</div>
     </div>
@@ -303,7 +338,32 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       </div>
     </div>
     <div style="text-align:right;margin-top:8px">
-      <button class="btn btn-amarillo" onclick="guardarPartido()">GUARDAR PARTIDO ⚽</button>
+      <button class="btn btn-amarillo" id="btn-guardar" onclick="guardarPartido()">GUARDAR PARTIDO ⚽</button>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR PARTIDO -->
+  <div class="modal-overlay" id="modal-editar" style="display:none" onclick="cerrarModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <h3>✏️ Editar Partido</h3>
+      <div class="modal-seccion">Marcador</div>
+      <div class="modal-marcador">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:#f87171;letter-spacing:1px;margin-bottom:2px">🔴 ROJO</div>
+          <input type="number" id="edit-gr" min="0" value="0">
+        </div>
+        <div class="modal-sep">–</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:#60a5fa;letter-spacing:1px;margin-bottom:2px">🔵 AZUL</div>
+          <input type="number" id="edit-ga" min="0" value="0">
+        </div>
+      </div>
+      <div class="modal-seccion">Goles por jugador</div>
+      <div class="modal-goles-grid" id="edit-goles"></div>
+      <div class="modal-btns">
+        <button class="btn btn-verde" onclick="guardarEdicion()">✅ GUARDAR CAMBIOS</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('modal-editar').style.display='none'">Cancelar</button>
+      </div>
     </div>
   </div>
 
@@ -376,18 +436,21 @@ function fechaKey(d){return d.toISOString().slice(0,10);}
 function validarFecha(){
   const key=fechaKey(viernesActual);
   const existe=(state.partidos||[]).some(p=>p.fechaKey===key);
-  const el=document.getElementById('viernes-display');
+  const elD=document.getElementById('viernes-display');
   const av=document.getElementById('fecha-aviso');
+  const btn=document.getElementById('btn-guardar');
   if(existe){
-    el.className='viernes-display fecha-dup';
+    elD.className='viernes-display fecha-dup';
     av.className='fecha-aviso error';
-    av.textContent='⚠️ Ya hay un partido registrado en esta fecha';
+    av.textContent='⚠️ Ya hay un partido en esta fecha — cambia el viernes para poder guardar';
     av.style.display='block';
+    if(btn){btn.disabled=true;btn.style.opacity='0.4';btn.style.cursor='not-allowed';}
   } else {
-    el.className='viernes-display fecha-ok';
+    elD.className='viernes-display fecha-ok';
     av.className='fecha-aviso ok';
     av.textContent='✅ Fecha disponible';
     av.style.display='block';
+    if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';}
   }
   return !existe;
 }
@@ -426,11 +489,18 @@ function calcPuntuacion(nombre){
 
 // ── MOTOR IA ──
 window.equilibrarEquipos=function(){
-  if(jugadoresSeleccionados.length!==10){toast('⚠️ Selecciona exactamente 10 jugadores');return;}
+  const nSel=jugadoresSeleccionados.length;
+  if(nSel<2||nSel%2!==0){toast('⚠️ Selecciona un número par de jugadores (mínimo 2)');return;}
+  if(nSel>10){toast('⚠️ Máximo 10 jugadores');return;}
   const conPuntos=jugadoresSeleccionados.map(n=>({nombre:n,pts:calcPuntuacion(n)})).sort((a,b)=>b.pts-a.pts);
-  const patron=['rojo','azul','azul','rojo','rojo','azul','azul','rojo','rojo','azul'];
+  // Serpentín genérico para cualquier número par
   const nR=[],nA=[];
-  conPuntos.forEach((j,i)=>{if(patron[i]==='rojo')nR.push(j.nombre);else nA.push(j.nombre);});
+  conPuntos.forEach((j,i)=>{
+    const bloque=Math.floor(i/2);
+    const posEnBloque=i%2;
+    if(bloque%2===0){ if(posEnBloque===0)nR.push(j.nombre); else nA.push(j.nombre); }
+    else { if(posEnBloque===0)nA.push(j.nombre); else nR.push(j.nombre); }
+  });
   const tR=nR.reduce((a,n)=>a+conPuntos.find(j=>j.nombre===n).pts,0);
   const tA=nA.reduce((a,n)=>a+conPuntos.find(j=>j.nombre===n).pts,0);
   const dif=Math.abs(tR-tA).toFixed(2);
@@ -475,11 +545,13 @@ function renderSeleccionJugadores(){
     const pts=calcPuntuacion(j.nombre);
     return `<span class="sel-chip ${sel?'seleccionado':'inactivo'}" onclick="toggleSeleccion('${j.nombre}')">${j.nombre}<span class="sel-score">${pts}</span></span>`;
   }).join('');
-  document.getElementById('sel-count').innerHTML=`Seleccionados: <span>${jugadoresSeleccionados.length}</span> / 10`;
+  const ns=jugadoresSeleccionados.length;
+  const parMsg=ns>0&&ns%2!==0?' <span style="color:#f87171;font-size:11px">(número impar)</span>':ns>0?' <span style="color:#4ade80;font-size:11px">✓ par</span>':'';
+  document.getElementById('sel-count').innerHTML=`Seleccionados: <span>${ns}</span> / 10${parMsg}`;
 }
 window.toggleSeleccion=function(nombre){
   if(jugadoresSeleccionados.includes(nombre))jugadoresSeleccionados=jugadoresSeleccionados.filter(n=>n!==nombre);
-  else{if(jugadoresSeleccionados.length>=10){toast('⚠️ Ya tienes 10');return;}jugadoresSeleccionados.push(nombre);}
+  else{if(jugadoresSeleccionados.length>=10){toast('⚠️ Máximo 10 jugadores');return;}jugadoresSeleccionados.push(nombre);}
   equipoRojo=equipoRojo.filter(n=>jugadoresSeleccionados.includes(n));
   equipoAzul=equipoAzul.filter(n=>jugadoresSeleccionados.includes(n));
   renderSeleccionJugadores();renderFormEquipos();
@@ -491,9 +563,13 @@ function renderFormEquipos(){
   document.getElementById('chips-libres').innerHTML=libres.length?libres.map(n=>`<span class="chip libre" onclick="toggleJugador('${n}')">${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">${jugadoresSeleccionados.length?'Todos asignados ✓':'Selecciona jugadores arriba'}</span>`;
   document.getElementById('chips-rojo').innerHTML=equipoRojo.length?equipoRojo.map(n=>`<span class="chip en-rojo" onclick="toggleJugador('${n}')">✕ ${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
   document.getElementById('chips-azul').innerHTML=equipoAzul.length?equipoAzul.map(n=>`<span class="chip en-azul" onclick="toggleJugador('${n}')">✕ ${n}</span>`).join(''):`<span style="color:var(--gris);font-size:13px;font-family:'Barlow Condensed',sans-serif">Vacío</span>`;
-  document.getElementById('count-rojo').textContent=equipoRojo.length+' / 5 jugadores';
-  document.getElementById('count-azul').textContent=equipoAzul.length+' / 5 jugadores';
-  document.getElementById('aviso-equipos').innerHTML=(equipoRojo.length===5&&equipoAzul.length===5)?'<div class="aviso">✅ Equipos completos — anota los goles abajo</div>':'';
+  const mitad=Math.ceil((equipoRojo.length+equipoAzul.length+jugadoresSeleccionados.filter(n=>!equipoRojo.includes(n)&&!equipoAzul.includes(n)).length)/2)||5;
+  document.getElementById('count-rojo').textContent=equipoRojo.length+' jugadores';
+  document.getElementById('count-azul').textContent=equipoAzul.length+' jugadores';
+  const totalSel=jugadoresSeleccionados.length;
+  const mitadEq=totalSel/2;
+  const completos=totalSel>=2&&totalSel%2===0&&equipoRojo.length===mitadEq&&equipoAzul.length===mitadEq;
+  document.getElementById('aviso-equipos').innerHTML=completos?'<div class="aviso">✅ Equipos completos — anota el marcador y los goles abajo</div>':'';
   renderGolesForm();
 }
 window.toggleJugador=function(nombre){
@@ -525,6 +601,7 @@ window.changeGol=function(n,delta){golesJugadores[n]=Math.max(0,(golesJugadores[
 window.guardarPartido=function(){
   if(!validarFecha()){toast('⚠️ Ya hay un partido en esta fecha');return;}
   if(!equipoRojo.length||!equipoAzul.length){toast('⚠️ Forma los dos equipos');return;}
+  if(equipoRojo.length!==equipoAzul.length){toast('⚠️ Los equipos deben tener el mismo número de jugadores');return;}
   const key=fechaKey(viernesActual);
   const golesR=equipoRojo.reduce((a,n)=>a+(golesJugadores[n]||0),0);
   const golesA=equipoAzul.reduce((a,n)=>a+(golesJugadores[n]||0),0);
@@ -553,10 +630,83 @@ function renderHistorial(){
     const badge=gr>ga?'<span class="ganador-badge rojo">🔴 Gana Rojo</span>':ga>gr?'<span class="ganador-badge azul">🔵 Gana Azul</span>':'<span class="ganador-badge empate">🤝 Empate</span>';
     const gR=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='rojo'&&v.goles>0).map(([n,v])=>`<span class="gol-badge rojo">⚽ ${n}: ${v.goles}</span>`).join('');
     const gA=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='azul'&&v.goles>0).map(([n,v])=>`<span class="gol-badge azul">⚽ ${n}: ${v.goles}</span>`).join('');
-    return `<div class="partido-card"><div class="partido-header"><span class="partido-fecha">📅 ${p.fecha}</span><span class="temporada-tag">${p.temporada||TEMPORADA_ACTUAL}</span>${badge}<button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑</button></div><div class="marcador-hist"><div class="marcador-equipo"><div class="marcador-equipo-nombre rojo">🔴 Rojo</div><div class="marcador-num rojo">${gr}</div></div><div class="marcador-sep-hist">–</div><div class="marcador-equipo"><div class="marcador-equipo-nombre azul">🔵 Azul</div><div class="marcador-num azul">${ga}</div></div></div><div class="goleadores-hist"><div><div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>${gR||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div><div><div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>${gA||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div></div></div>`;
+    return `<div class="partido-card"><div class="partido-header"><span class="partido-fecha">📅 ${p.fecha}</span><span class="temporada-tag">${p.temporada||TEMPORADA_ACTUAL}</span>${badge}<button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑</button><button class="btn btn-ghost" style="font-size:12px;padding:5px 10px" onclick="abrirEdicion(${p.id})">✏️ Editar</button></div><div class="marcador-hist"><div class="marcador-equipo"><div class="marcador-equipo-nombre rojo">🔴 Rojo</div><div class="marcador-num rojo">${gr}</div></div><div class="marcador-sep-hist">–</div><div class="marcador-equipo"><div class="marcador-equipo-nombre azul">🔵 Azul</div><div class="marcador-num azul">${ga}</div></div></div><div class="goleadores-hist"><div><div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>${gR||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div><div><div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>${gA||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div></div></div>`;
   }).join('');
 }
 window.borrarPartido=function(id){if(!confirm('¿Borrar?'))return;state.partidos=state.partidos.filter(p=>p.id!==id);save();renderHistorial();toast('Partido eliminado');};
+
+// ── EDICIÓN DE PARTIDOS ────────────────────────────────────────────────────
+let _editId=null;
+
+window.abrirEdicion=function(id){
+  const p=(state.partidos||[]).find(p=>p.id===id);
+  if(!p) return;
+  _editId=id;
+  document.getElementById('edit-gr').value=p.marcador.rojo;
+  document.getElementById('edit-ga').value=p.marcador.azul;
+
+  // Goles por jugador
+  const grid=document.getElementById('edit-goles');
+  const rojo=p.equipoRojo||[];
+  const azul=p.equipoAzul||[];
+  let html='';
+  if(rojo.length){
+    html+=`<div style="grid-column:1/-1;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-top:4px">🔴 Equipo Rojo</div>`;
+    html+=rojo.map(n=>`<div class="modal-gol-item rojo"><span>${n}</span><input type="number" min="0" id="eg-${n.replace(/\s/g,'_')}" value="${(p.goles[n]||{}).goles||0}" oninput="recalcularMarcadorModal()"></div>`).join('');
+  }
+  if(azul.length){
+    html+=`<div style="grid-column:1/-1;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#60a5fa;margin-top:8px">🔵 Equipo Azul</div>`;
+    html+=azul.map(n=>`<div class="modal-gol-item azul"><span>${n}</span><input type="number" min="0" id="eg-${n.replace(/\s/g,'_')}" value="${(p.goles[n]||{}).goles||0}" oninput="recalcularMarcadorModal()"></div>`).join('');
+  }
+  grid.innerHTML=html;
+  document.getElementById('modal-editar').style.display='flex';
+};
+
+window.cerrarModal=function(e){
+  if(e.target===document.getElementById('modal-editar'))
+    document.getElementById('modal-editar').style.display='none';
+};
+
+window.recalcularMarcadorModal=function(){
+  const p=(state.partidos||[]).find(p=>p.id===_editId);
+  if(!p) return;
+  const rojo=p.equipoRojo||[];
+  const azul=p.equipoAzul||[];
+  let gr=0,ga=0;
+  rojo.forEach(n=>{const inp=document.getElementById('eg-'+n.replace(/\s/g,'_'));if(inp)gr+=parseInt(inp.value)||0;});
+  azul.forEach(n=>{const inp=document.getElementById('eg-'+n.replace(/\s/g,'_'));if(inp)ga+=parseInt(inp.value)||0;});
+  document.getElementById('edit-gr').value=gr;
+  document.getElementById('edit-ga').value=ga;
+};
+
+window.guardarEdicion=function(){
+  const p=(state.partidos||[]).find(p=>p.id===_editId);
+  if(!p) return;
+
+  const gr=parseInt(document.getElementById('edit-gr').value)||0;
+  const ga=parseInt(document.getElementById('edit-ga').value)||0;
+  p.marcador.rojo=gr; p.marcador.azul=ga;
+
+  // Actualizar resultado según nuevo marcador
+  const resRojo=gr>ga?'victoria':gr<ga?'derrota':'empate';
+  const resAzul=ga>gr?'victoria':ga<gr?'derrota':'empate';
+
+  const rojo=p.equipoRojo||[];
+  const azul=p.equipoAzul||[];
+  [...rojo,...azul].forEach(n=>{
+    const inp=document.getElementById('eg-'+n.replace(/\s/g,'_'));
+    if(inp && p.goles[n]){
+      p.goles[n].goles=parseInt(inp.value)||0;
+      p.goles[n].resultado=rojo.includes(n)?resRojo:resAzul;
+    }
+  });
+
+  state.partidos=state.partidos.map(x=>x.id===_editId?p:x);
+  save();
+  document.getElementById('modal-editar').style.display='none';
+  renderHistorial();
+  toast('✅ Partido actualizado');
+};
 
 // ── ESTADÍSTICAS ──
 function calcStats(partidos){
@@ -594,6 +744,140 @@ function renderEstadisticas(){
 }
 
 // ── KPIs RESUMEN ──
+
+// ── FUNCIONES MVP ────────────────────────────────────────────────────────────
+
+function calcMvpPartido(partido) {
+  // puntos = goles*2 + (1 si equipo ganó)
+  let mejor=null; let mejorPts=-999;
+  Object.entries(partido.goles||{}).forEach(([n,v])=>{
+    const pts=(v.goles||0)*2+(v.resultado==='victoria'?1:0);
+    if(pts>mejorPts||(pts===mejorPts&&v.resultado==='victoria'&&(!mejor||partido.goles[mejor]?.resultado!=='victoria'))){
+      mejorPts=pts; mejor=n;
+    }
+  });
+  return {nombre:mejor||'—', pts:mejorPts};
+}
+
+function calcMvpMes(partidos, mes, anio) {
+  // mes: 1-12, anio: 2025/2026
+  const pMes=partidos.filter(p=>{
+    const d=new Date(p.fechaKey);
+    return d.getMonth()+1===mes && d.getFullYear()===anio;
+  });
+  const scores={};
+  pMes.forEach(p=>{
+    const mvpP=calcMvpPartido(p).nombre;
+    Object.entries(p.goles||{}).forEach(([n,v])=>{
+      if(!scores[n]) scores[n]=0;
+      scores[n]+=1; // participar +1
+      if(v.resultado==='victoria') scores[n]+=3;
+      else if(v.resultado==='empate') scores[n]+=1;
+      else scores[n]-=0.5;
+      scores[n]+=(v.goles||0)*1; // goles +1 cada uno
+      if(n===mvpP) scores[n]+=1; // MVP partido bonus
+    });
+  });
+  const sorted=Object.entries(scores).sort((a,b)=>{
+    if(b[1]!==a[1]) return b[1]-a[1];
+    // Desempate: goles > victorias > partidos
+    const statsA=calcStatsJugador(a[0],pMes);
+    const statsB=calcStatsJugador(b[0],pMes);
+    if(statsB.goles!==statsA.goles) return statsB.goles-statsA.goles;
+    if(statsB.victorias!==statsA.victorias) return statsB.victorias-statsA.victorias;
+    return statsB.partidos-statsA.partidos;
+  });
+  return sorted.length>0?{nombre:sorted[0][0],pts:parseFloat(sorted[0][1].toFixed(1)),mes,anio}:{nombre:'—',pts:0,mes,anio};
+}
+
+function calcStatsJugador(nombre, partidos) {
+  let goles=0,victorias=0,pj=0;
+  partidos.forEach(p=>{
+    if(p.goles[nombre]){
+      pj++; goles+=p.goles[nombre].goles||0;
+      if(p.goles[nombre].resultado==='victoria') victorias++;
+    }
+  });
+  return {goles,victorias,partidos:pj};
+}
+
+function calcMvpTemporada(partidos) {
+  if(!partidos.length) return {nombre:'—',pts:0};
+  // Agrupar partidos por mes
+  const meses={};
+  partidos.forEach(p=>{
+    const d=new Date(p.fechaKey);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if(!meses[key]) meses[key]={mes:d.getMonth()+1,anio:d.getFullYear(),partidos:[]};
+    meses[key].partidos.push(p);
+  });
+  const listaMeses=Object.values(meses).sort((a,b)=>a.anio!==b.anio?a.anio-b.anio:a.mes-b.mes);
+
+  // MVP de cada mes
+  const mvpsMes={};
+  listaMeses.forEach(m=>{
+    const mvp=calcMvpMes(partidos,m.mes,m.anio);
+    if(mvp.nombre!=='—') mvpsMes[`${m.anio}-${m.mes}`]=mvp.nombre;
+  });
+
+  // Calcular puntos temporada por jugador
+  const scores={};
+  const todosJugadores=new Set();
+  partidos.forEach(p=>Object.keys(p.goles||{}).forEach(n=>todosJugadores.add(n)));
+
+  todosJugadores.forEach(n=>{
+    let pts=0;
+    let mvpsMensuales=0;
+    let rachaActual=0; let mejorRacha=0;
+    const mesKeys=Object.keys(mvpsMes).sort();
+
+    listaMeses.forEach(m=>{
+      const key=`${m.anio}-${m.mes}`;
+      const pMes=m.partidos;
+      const totalPMes=pMes.length;
+      const pjMes=pMes.filter(p=>p.goles[n]).length;
+
+      // Puntos del mes
+      let ptsMes=0;
+      pMes.forEach(p=>{
+        if(!p.goles[n]) return;
+        const v=p.goles[n];
+        ptsMes+=1; // participar
+        if(v.resultado==='victoria') ptsMes+=3;
+        else if(v.resultado==='empate') ptsMes+=1;
+        else ptsMes-=0.5;
+        ptsMes+=(v.goles||0)*1;
+        if(calcMvpPartido(p).nombre===n) ptsMes+=1;
+      });
+      pts+=ptsMes;
+
+      // MVP mensual +5
+      if(mvpsMes[key]===n){
+        pts+=5; mvpsMensuales++;
+        rachaActual++;
+        if(rachaActual>mejorRacha) mejorRacha=rachaActual;
+      } else { rachaActual=0; }
+
+      // Regularidad >=75% partidos +3
+      if(totalPMes>0 && pjMes/totalPMes>=0.75) pts+=3;
+    });
+
+    // Rachas MVP consecutivas de 2+ meses +4 cada racha
+    // Ya capturado con mejorRacha
+    if(mejorRacha>=2) pts+=4*Math.floor(mejorRacha/2);
+
+    scores[n]={pts:parseFloat(pts.toFixed(1)),mvpsMensuales,goles:calcStatsJugador(n,partidos).goles,pj:calcStatsJugador(n,partidos).partidos};
+  });
+
+  const sorted=Object.entries(scores).sort((a,b)=>{
+    if(b[1].pts!==a[1].pts) return b[1].pts-a[1].pts;
+    if(b[1].goles!==a[1].goles) return b[1].goles-a[1].goles;
+    if(b[1].mvpsMensuales!==a[1].mvpsMensuales) return b[1].mvpsMensuales-a[1].mvpsMensuales;
+    return b[1].pj-a[1].pj;
+  });
+  return sorted.length>0?{nombre:sorted[0][0],pts:sorted[0][1].pts}:{nombre:'—',pts:0};
+}
+
 function renderResumen(){
   const partidos=filtrarPartidos('sel-temporada-resumen');
   const temporada=getTemporadaSel('sel-temporada-resumen');
@@ -615,6 +899,7 @@ function renderResumen(){
   const masEquil=jugadores.sort((a,b)=>b[1].empates-a[1].empates)[0];
   const masEstable=jugadores.filter(([_,s])=>s.partidos>=3).sort((a,b)=>{const dA=Math.abs(a[1].victorias-a[1].derrotas)/a[1].partidos;const dB=Math.abs(b[1].victorias-b[1].derrotas)/b[1].partidos;return dA-dB;})[0];
   const masActivo=jugadores.sort((a,b)=>b[1].partidos-a[1].partidos)[0];
+  const masPerdedor=jugadores.filter(([_,s])=>s.partidos>=3).sort((a,b)=>b[1].derrotas-a[1].derrotas)[0];
   // Mejor average (mínimo 5 partidos)
   const mejorAvg=jugadores.filter(([_,s])=>s.partidos>=5).sort((a,b)=>(b[1].goles/b[1].partidos)-(a[1].goles/a[1].partidos))[0];
 
@@ -622,14 +907,57 @@ function renderResumen(){
     {icon:'⚽',titulo:'Pichichi',nombre:pichichi?.[0]||'—',valor:pichichi?`${pichichi[1].goles} goles`:'',color:'oro'},
     {icon:'📈',titulo:'Mejor Average',nombre:mejorAvg?.[0]||'—',valor:mejorAvg?`${(mejorAvg[1].goles/mejorAvg[1].partidos).toFixed(2)} goles/partido`:'',color:'purple-card'},
     {icon:'🏆',titulo:'Más Ganador',nombre:masGanador?.[0]||'—',valor:masGanador?`${masGanador[1].victorias} victorias`:'',color:'verde-card'},
-    {icon:'🔴⚽',titulo:'Pichichi Rojo',nombre:pRojo?.[0]||'—',valor:pRojo?`${pRojo[1].golesRojo} goles`:'',color:'rojo-card'},
-    {icon:'🔵⚽',titulo:'Pichichi Azul',nombre:pAzul?.[0]||'—',valor:pAzul?`${pAzul[1].golesAzul} goles`:'',color:'azul-card'},
-    {icon:'🔴🏆',titulo:'Más Ganador Rojo',nombre:mGanRojo?.[0]||'—',valor:mGanRojo?`${mGanRojo[1].vicRojo}/${mGanRojo[1].partidosRojo}`:'',color:'rojo-card'},
-    {icon:'🔵🏆',titulo:'Más Ganador Azul',nombre:mGanAzul?.[0]||'—',valor:mGanAzul?`${mGanAzul[1].vicAzul}/${mGanAzul[1].partidosAzul}`:'',color:'azul-card'},
     {icon:'⚖️',titulo:'Más Equilibrado',nombre:masEquil?.[0]||'—',valor:masEquil?`${masEquil[1].empates} empates`:'',color:'gris-card'},
     {icon:'📊',titulo:'Más Estable',nombre:masEstable?.[0]||'—',valor:masEstable?`${masEstable[1].victorias}V ${masEstable[1].empates}E ${masEstable[1].derrotas}D`:'',color:'verde-card'},
     {icon:'👟',titulo:'Más Participativo',nombre:masActivo?.[0]||'—',valor:masActivo?`${masActivo[1].partidos} partidos`:'',color:'oro'},
+    {icon:'💀',titulo:'Más Perdedor',nombre:masPerdedor?.[0]||'—',valor:masPerdedor?`${masPerdedor[1].derrotas} derrotas`:'',color:'rojo-card'},
   ];
+
+  // ── RENDER MVPs ──────────────────────────────────────────────────────────
+  const ultimoPartido = partidos.length>0 ? partidos.slice().sort((a,b)=>b.fechaKey.localeCompare(a.fechaKey))[0] : null;
+  const mvpUltimoPartido = ultimoPartido ? calcMvpPartido(ultimoPartido) : {nombre:'—',pts:0};
+
+  // MVP último mes: usar el mes del último partido
+  let mvpMesActual = {nombre:'—',pts:0,mes:0,anio:0};
+  if(partidos.length>0){
+    const ult = partidos.slice().sort((a,b)=>b.fechaKey.localeCompare(a.fechaKey))[0];
+    const d = new Date(ult.fechaKey);
+    mvpMesActual = calcMvpMes(partidos, d.getMonth()+1, d.getFullYear());
+  }
+
+  const mvpTemporada = partidos.length>0 ? calcMvpTemporada(partidos) : {nombre:'—',pts:0};
+
+  const MESES_NOMBRE_MVP=['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  const mvpsHTML = ultimoPartido ? `
+    <div class="mvp-grid">
+      <div class="mvp-card partido">
+        <span class="mvp-corona">🏅</span>
+        <div class="mvp-tipo">MVP Último Partido</div>
+        <div class="mvp-nombre">${mvpUltimoPartido.nombre}</div>
+        <div class="mvp-pts partido">${mvpUltimoPartido.pts} pts</div>
+        <div class="mvp-detalle">${ultimoPartido.fecha}</div>
+        <div class="mvp-formula">Goles×2 + Victoria+1</div>
+      </div>
+      <div class="mvp-card mes">
+        <span class="mvp-corona">🌟</span>
+        <div class="mvp-tipo">MVP ${mvpMesActual.mes>0?MESES_NOMBRE_MVP[mvpMesActual.mes]+' '+mvpMesActual.anio:'Mes Actual'}</div>
+        <div class="mvp-nombre">${mvpMesActual.nombre}</div>
+        <div class="mvp-pts mes">${mvpMesActual.pts} pts</div>
+        <div class="mvp-detalle">Participar+1 · Victoria+3 · Empate+1 · Derrota-0.5 · Gol+1 · MVP partido+1</div>
+        <div class="mvp-formula">Puntos acumulados del mes</div>
+      </div>
+      <div class="mvp-card temporada">
+        <span class="mvp-corona">👑</span>
+        <div class="mvp-tipo">MVP Temporada ${temporada}</div>
+        <div class="mvp-nombre">${mvpTemporada.nombre}</div>
+        <div class="mvp-pts temporada">${mvpTemporada.pts} pts</div>
+        <div class="mvp-detalle">Puntos mensuales + MVP mes+5 + Regularidad≥75%+3 + Racha MVPs+4</div>
+        <div class="mvp-formula">Puntuación acumulada temporada completa</div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('mvp-wrap').innerHTML = mvpsHTML;
 
   document.getElementById('kpi-hero-wrap').innerHTML=`<div class="kpi-hero">${kpis.map(k=>`<div class="kpi-card ${k.color}"><span class="kpi-icon">${k.icon}</span><div class="kpi-titulo">${k.titulo}</div><div class="kpi-nombre">${k.nombre}</div><div class="kpi-valor"><span>${k.valor}</span></div></div>`).join('')}</div>`;
 
@@ -643,8 +971,8 @@ function renderResumen(){
     <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conG}</div><div class="resumen-label">Con ganador</div></div>
     <div class="resumen-item"><div class="resumen-num" style="color:var(--amarillo)">${emp}</div><div class="resumen-label">Empates</div></div>
     <div class="resumen-item"><div class="resumen-num">${golesT}</div><div class="resumen-label">Goles totales</div></div>
-    <div class="resumen-item"><div class="resumen-num" style="color:#f87171">${vicR}</div><div class="resumen-label">Victorias Rojo</div></div>
-    <div class="resumen-item"><div class="resumen-num" style="color:#60a5fa">${vicA}</div><div class="resumen-label">Victorias Azul</div></div>`;
+    
+    `;
 }
 
 // ── JUGADORES ──
