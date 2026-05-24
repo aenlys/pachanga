@@ -676,7 +676,7 @@ window.guardarPartido=function(){
 // ── HISTORIAL ──
 function renderHistorial(){
   const el=document.getElementById('lista-historial');
-  const partidos=filtrarPartidos('sel-temporada-historial');
+  const partidos=filtrarPartidos('sel-temporada-historial').slice().sort((a,b)=>b.fechaKey.localeCompare(a.fechaKey));
   if(!partidos.length){el.innerHTML='<div class="empty-state"><span class="icon">📭</span>No hay partidos en esta temporada</div>';return;}
   el.innerHTML=partidos.map(p=>{
     const gr=p.marcador.rojo,ga=p.marcador.azul;
@@ -1106,7 +1106,7 @@ function setRol(rol, guardar=true){
   const tabs = document.querySelectorAll('.tab');
   tabs.forEach(t => {
     const txt = t.textContent.trim();
-    if(txt.includes('Partido') || txt.includes('Jugadores')){
+    if(txt.includes('Partido')){
       t.style.display = isAdmin ? '' : 'none';
     }
   });
