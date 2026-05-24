@@ -238,6 +238,23 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .mvp-pts.temporada{color:#38bdf8;}
 .mvp-detalle{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--gris);margin-top:8px;line-height:1.6;}
 .mvp-formula{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#3a4a3e;margin-top:8px;padding-top:8px;border-top:1px solid var(--borde);}
+
+/* ── LOGIN ── */
+#login-overlay{position:fixed;inset:0;background:var(--fondo);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-box{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px;padding:36px;max-width:380px;width:100%;text-align:center;}
+.login-box h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--amarillo);margin-bottom:6px;}
+.login-box p{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--gris);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;}
+.login-input{width:100%;background:var(--fondo);border:1px solid var(--borde);color:var(--blanco);padding:12px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:15px;margin-bottom:12px;box-sizing:border-box;}
+.login-input:focus{outline:none;border-color:var(--verde-claro);}
+.login-error{color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:13px;margin-bottom:12px;display:none;}
+.login-guest{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--gris);letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-decoration:underline;margin-top:14px;display:inline-block;}
+.login-guest:hover{color:var(--blanco);}
+/* Badge rol */
+#rol-badge{position:fixed;top:12px;left:12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:5px;z-index:100;cursor:pointer;}
+.rol-admin{background:rgba(245,197,24,0.15);border:1px solid var(--amarillo);color:var(--amarillo);}
+.rol-viewer{background:var(--tarjeta);border:1px solid var(--borde);color:var(--gris);}
+/* Ocultar controles de edición para viewers */
+body.viewer .edit-only{display:none!important;}
 .empty-state .icon{font-size:40px;display:block;margin-bottom:10px;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde);color:white;padding:12px 24px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;z-index:1000;transition:transform .3s ease;}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -251,6 +268,22 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 </style>
 </head>
 <body>
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay" style="display:none">
+  <div class="login-box">
+    <h2>⚽ La Pachanga</h2>
+    <p>Accede como administrador o entra como invitado</p>
+    <input class="login-input" type="text" id="login-user" placeholder="Usuario" autocomplete="off">
+    <input class="login-input" type="password" id="login-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+    <button class="btn btn-amarillo" style="width:100%" onclick="doLogin()">ENTRAR COMO ADMIN</button>
+    <div class="login-guest" onclick="entrarComoInvitado()">👁️ Solo visualizar (invitado)</div>
+  </div>
+</div>
+
+<!-- ROL BADGE -->
+<div id="rol-badge" class="rol-viewer" onclick="mostrarLoginAdmin()" title="Cambiar modo"></div>
+
 <div id="loading-overlay"><div class="spinner"></div><h2>⚽ La Pachanga</h2><p>Cargando datos...</p></div>
 <div id="sync-status" class="sync-ok" style="display:none">✓ Sincronizado</div>
 <div class="container">
@@ -290,6 +323,15 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       </div>
       <div class="fecha-aviso" id="fecha-aviso"></div>
     </div>
+    <!-- OVERLAY fecha bloqueada -->
+    <div id="fecha-bloqueada-overlay" style="display:none">
+      <div style="background:rgba(192,57,43,0.12);border:2px solid var(--rojo);border-radius:12px;padding:20px;text-align:center;margin-bottom:20px;">
+        <div style="font-size:32px;margin-bottom:8px">🚫</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#f87171;margin-bottom:6px">FECHA NO DISPONIBLE</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--gris)">Ya existe un partido registrado en esta fecha.<br>Usa las flechas ‹ › para seleccionar otro viernes.</div>
+      </div>
+    </div>
+    <div id="nuevo-contenido">
     <div class="card">
       <h2>🧑‍🤝‍🧑 Los 10 de Hoy</h2>
       <p style="color:var(--gris);font-size:13px;margin-bottom:4px">Selecciona jugadores en número par (máx. 10) para formar equipos iguales.</p>
@@ -338,9 +380,11 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
       </div>
     </div>
     <div style="text-align:right;margin-top:8px">
-      <button class="btn btn-amarillo" id="btn-guardar" onclick="guardarPartido()">GUARDAR PARTIDO ⚽</button>
+      <button class="btn btn-amarillo edit-only" id="btn-guardar" onclick="guardarPartido()">GUARDAR PARTIDO ⚽</button>
     </div>
   </div>
+
+  </div><!-- fin nuevo-contenido -->
 
   <!-- MODAL EDITAR PARTIDO -->
   <div class="modal-overlay" id="modal-editar" style="display:none" onclick="cerrarModal(event)">
@@ -438,25 +482,32 @@ function validarFecha(){
   const existe=(state.partidos||[]).some(p=>p.fechaKey===key);
   const elD=document.getElementById('viernes-display');
   const av=document.getElementById('fecha-aviso');
-  const btn=document.getElementById('btn-guardar');
+  const overlay=document.getElementById('fecha-bloqueada-overlay');
+  const contenido=document.getElementById('nuevo-contenido');
+
   if(existe){
+    // Fecha ocupada: mostrar en rojo, ocultar todo el formulario
     elD.className='viernes-display fecha-dup';
     av.className='fecha-aviso error';
-    av.textContent='⚠️ Ya hay un partido en esta fecha — cambia el viernes para poder guardar';
+    av.textContent='🚫 Fecha no disponible';
     av.style.display='block';
-    if(btn){btn.disabled=true;btn.style.opacity='0.4';btn.style.cursor='not-allowed';}
+    if(overlay) overlay.style.display='block';
+    if(contenido) contenido.style.display='none';
   } else {
+    // Fecha libre: ocultar overlay, mostrar formulario
     elD.className='viernes-display fecha-ok';
     av.className='fecha-aviso ok';
     av.textContent='✅ Fecha disponible';
     av.style.display='block';
-    if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';}
+    if(overlay) overlay.style.display='none';
+    if(contenido) contenido.style.display='block';
   }
   return !existe;
 }
 
 function renderViernesDisplay(){document.getElementById('viernes-display').textContent=formatViernes(viernesActual);validarFecha();}
-window.cambiarViernes=function(delta){viernesActual=new Date(viernesActual);viernesActual.setDate(viernesActual.getDate()+delta*7);renderViernesDisplay();};
+window.cambiarViernes=function(delta){viernesActual=new Date(viernesActual);viernesActual.setDate(viernesActual.getDate()+delta*7);renderViernesDisplay();
+  initLogin();};
 window.irAViernesHoy=function(){viernesActual=proximoViernes(new Date());renderViernesDisplay();};
 
 // ── TEMPORADAS ──
@@ -599,7 +650,11 @@ window.changeGol=function(n,delta){golesJugadores[n]=Math.max(0,(golesJugadores[
 
 // ── GUARDAR PARTIDO ──
 window.guardarPartido=function(){
-  if(!validarFecha()){toast('⚠️ Ya hay un partido en esta fecha');return;}
+  if(!isAdmin){toast('🔒 Solo el admin puede guardar partidos');return;}
+  // Triple check: validar fecha directamente desde state
+  const key=fechaKey(viernesActual);
+  const fechaOcupada=(state.partidos||[]).some(p=>p.fechaKey===key);
+  if(fechaOcupada){toast('🚫 Fecha no disponible');validarFecha();return;}
   if(!equipoRojo.length||!equipoAzul.length){toast('⚠️ Forma los dos equipos');return;}
   if(equipoRojo.length!==equipoAzul.length){toast('⚠️ Los equipos deben tener el mismo número de jugadores');return;}
   const key=fechaKey(viernesActual);
@@ -630,10 +685,10 @@ function renderHistorial(){
     const badge=gr>ga?'<span class="ganador-badge rojo">🔴 Gana Rojo</span>':ga>gr?'<span class="ganador-badge azul">🔵 Gana Azul</span>':'<span class="ganador-badge empate">🤝 Empate</span>';
     const gR=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='rojo'&&v.goles>0).map(([n,v])=>`<span class="gol-badge rojo">⚽ ${n}: ${v.goles}</span>`).join('');
     const gA=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='azul'&&v.goles>0).map(([n,v])=>`<span class="gol-badge azul">⚽ ${n}: ${v.goles}</span>`).join('');
-    return `<div class="partido-card"><div class="partido-header"><span class="partido-fecha">📅 ${p.fecha}</span><span class="temporada-tag">${p.temporada||TEMPORADA_ACTUAL}</span>${badge}<button class="btn btn-rojo" onclick="borrarPartido(${p.id})">🗑</button><button class="btn btn-ghost" style="font-size:12px;padding:5px 10px" onclick="abrirEdicion(${p.id})">✏️ Editar</button></div><div class="marcador-hist"><div class="marcador-equipo"><div class="marcador-equipo-nombre rojo">🔴 Rojo</div><div class="marcador-num rojo">${gr}</div></div><div class="marcador-sep-hist">–</div><div class="marcador-equipo"><div class="marcador-equipo-nombre azul">🔵 Azul</div><div class="marcador-num azul">${ga}</div></div></div><div class="goleadores-hist"><div><div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>${gR||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div><div><div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>${gA||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div></div></div>`;
+    return `<div class="partido-card"><div class="partido-header"><span class="partido-fecha">📅 ${p.fecha}</span><span class="temporada-tag">${p.temporada||TEMPORADA_ACTUAL}</span>${badge}<button class="btn btn-rojo edit-only" onclick="borrarPartido(${p.id})">🗑</button><button class="btn btn-ghost" style="font-size:12px;padding:5px 10px" onclick="abrirEdicion(${p.id})" class="btn btn-ghost edit-only" style="font-size:12px;padding:5px 10px">✏️</button></div><div class="marcador-hist"><div class="marcador-equipo"><div class="marcador-equipo-nombre rojo">🔴 Rojo</div><div class="marcador-num rojo">${gr}</div></div><div class="marcador-sep-hist">–</div><div class="marcador-equipo"><div class="marcador-equipo-nombre azul">🔵 Azul</div><div class="marcador-num azul">${ga}</div></div></div><div class="goleadores-hist"><div><div class="goleadores-col-titulo rojo">🔴 Goleadores Rojo</div>${gR||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div><div><div class="goleadores-col-titulo azul">🔵 Goleadores Azul</div>${gA||'<span style="color:var(--gris);font-size:12px">Sin goles</span>'}</div></div></div>`;
   }).join('');
 }
-window.borrarPartido=function(id){if(!confirm('¿Borrar?'))return;state.partidos=state.partidos.filter(p=>p.id!==id);save();renderHistorial();toast('Partido eliminado');};
+window.borrarPartido=function(id){if(!isAdmin){toast('🔒 Solo el admin puede borrar');return;}if(!confirm('¿Borrar?'))return;state.partidos=state.partidos.filter(p=>p.id!==id);save();renderHistorial();toast('Partido eliminado');};
 
 // ── EDICIÓN DE PARTIDOS ────────────────────────────────────────────────────
 let _editId=null;
@@ -679,7 +734,7 @@ window.recalcularMarcadorModal=function(){
   document.getElementById('edit-ga').value=ga;
 };
 
-window.guardarEdicion=function(){
+window.guardarEdicion=function(){if(!isAdmin){toast('🔒 Solo el admin puede editar');return;}
   const p=(state.partidos||[]).find(p=>p.id===_editId);
   if(!p) return;
 
@@ -977,8 +1032,8 @@ function renderResumen(){
 
 // ── JUGADORES ──
 function jugadorById(id){return(state.jugadores||[]).find(j=>j.id===id);}
-window.addJugador=function(){const inp=document.getElementById('nuevo-jugador');const nombre=inp.value.trim();if(!nombre)return;if((state.jugadores||[]).some(j=>j.nombre===nombre)){toast('⚠️ Ya existe');return;}if(!state.jugadores)state.jugadores=[];state.jugadores.push({id:Date.now().toString(),nombre,skills:{velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0}});save();inp.value='';renderJugadores();toast('✅ '+nombre+' añadido');};
-window.removeJugador=function(id){const j=jugadorById(id);if(!j)return;if(!confirm('¿Eliminar a '+j.nombre+'?'))return;state.jugadores=state.jugadores.filter(j=>j.id!==id);save();renderJugadores();};
+window.addJugador=function(){if(!isAdmin){toast('🔒 Solo el admin puede añadir jugadores');return;}const inp=document.getElementById('nuevo-jugador');const nombre=inp.value.trim();if(!nombre)return;if((state.jugadores||[]).some(j=>j.nombre===nombre)){toast('⚠️ Ya existe');return;}if(!state.jugadores)state.jugadores=[];state.jugadores.push({id:Date.now().toString(),nombre,skills:{velocidad:0,resistencia:0,fuerza:0,control:0,regate:0,portero:0}});save();inp.value='';renderJugadores();toast('✅ '+nombre+' añadido');};
+window.removeJugador=function(id){if(!isAdmin){toast('🔒 Solo el admin puede eliminar jugadores');return;}const j=jugadorById(id);if(!j)return;if(!confirm('¿Eliminar a '+j.nombre+'?'))return;state.jugadores=state.jugadores.filter(j=>j.id!==id);save();renderJugadores();};
 window.toggleEditNombre=function(id){
   const tE=document.getElementById('nombre-text-'+id),iE=document.getElementById('nombre-input-'+id),bE=document.getElementById('nombre-btn-'+id);
   if(iE.style.display==='none'||!iE.style.display){iE.style.display='block';tE.style.display='none';iE.value=tE.textContent;iE.focus();bE.textContent='✓ Guardar';}
@@ -1013,6 +1068,89 @@ async function save(){setSyncStatus('saving','⏳ Guardando...');try{await set(r
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ── FIREBASE ──
+// ── SISTEMA DE LOGIN LOCAL ────────────────────────────────────────────────────
+const ADMIN_USER = 'Admin';
+const ADMIN_PASS_HASH = 'Fuentes54*'; // contraseña directa (local, sin backend)
+let isAdmin = false;
+
+function initLogin(){
+  // Comprobar sesión guardada en sessionStorage
+  const sesion = sessionStorage.getItem('pachanga_rol');
+  if(sesion === 'admin'){
+    setRol('admin', false);
+  } else if(sesion === 'viewer'){
+    setRol('viewer', false);
+  } else {
+    // Mostrar login
+    document.getElementById('login-overlay').style.display='flex';
+  }
+}
+
+function setRol(rol, guardar=true){
+  isAdmin = (rol === 'admin');
+  if(guardar) sessionStorage.setItem('pachanga_rol', rol);
+
+  // Badge
+  const badge = document.getElementById('rol-badge');
+  if(isAdmin){
+    badge.textContent = '🔑 Admin';
+    badge.className = 'rol-admin';
+    badge.title = 'Modo Admin — clic para cerrar sesión';
+    document.body.classList.remove('viewer');
+  } else {
+    badge.textContent = '👁️ Invitado';
+    badge.className = 'rol-viewer';
+    badge.title = 'Modo invitado — clic para acceder como admin';
+    document.body.classList.add('viewer');
+  }
+
+  // Ocultar/mostrar tabs de edición
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    const txt = t.textContent.trim();
+    if(txt.includes('Partido') || txt.includes('Jugadores')){
+      t.style.display = isAdmin ? '' : 'none';
+    }
+  });
+
+  document.getElementById('login-overlay').style.display='none';
+}
+
+window.doLogin = function(){
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err  = document.getElementById('login-error');
+  if(user === ADMIN_USER && pass === ADMIN_PASS_HASH){
+    err.style.display = 'none';
+    setRol('admin');
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-pass').value = '';
+  }
+};
+
+window.entrarComoInvitado = function(){
+  setRol('viewer');
+};
+
+window.mostrarLoginAdmin = function(){
+  if(isAdmin){
+    // Cerrar sesión
+    if(confirm('¿Cerrar sesión de admin?')){
+      sessionStorage.removeItem('pachanga_rol');
+      setRol('viewer');
+    }
+  } else {
+    // Abrir login
+    document.getElementById('login-overlay').style.display='flex';
+    document.getElementById('login-user').value='';
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-error').style.display='none';
+  }
+};
+
+// ── FIN LOGIN ─────────────────────────────────────────────────────────────────
+
 onValue(ref(db,'pachanga'),(snapshot)=>{
   const data=snapshot.val();
   if(primeraVez && (!data || !data.partidos || data.partidos.length===0)){
