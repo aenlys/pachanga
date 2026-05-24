@@ -506,8 +506,7 @@ function validarFecha(){
 }
 
 function renderViernesDisplay(){document.getElementById('viernes-display').textContent=formatViernes(viernesActual);validarFecha();}
-window.cambiarViernes=function(delta){viernesActual=new Date(viernesActual);viernesActual.setDate(viernesActual.getDate()+delta*7);renderViernesDisplay();
-  initLogin();};
+window.cambiarViernes=function(delta){viernesActual=new Date(viernesActual);viernesActual.setDate(viernesActual.getDate()+delta*7);renderViernesDisplay();};
 window.irAViernesHoy=function(){viernesActual=proximoViernes(new Date());renderViernesDisplay();};
 
 // ── TEMPORADAS ──
@@ -657,7 +656,6 @@ window.guardarPartido=function(){
   if(fechaOcupada){toast('🚫 Fecha no disponible');validarFecha();return;}
   if(!equipoRojo.length||!equipoAzul.length){toast('⚠️ Forma los dos equipos');return;}
   if(equipoRojo.length!==equipoAzul.length){toast('⚠️ Los equipos deben tener el mismo número de jugadores');return;}
-  const key=fechaKey(viernesActual);
   const golesR=equipoRojo.reduce((a,n)=>a+(golesJugadores[n]||0),0);
   const golesA=equipoAzul.reduce((a,n)=>a+(golesJugadores[n]||0),0);
   const resR=golesR>golesA?'victoria':golesR<golesA?'derrota':'empate';
@@ -1180,6 +1178,7 @@ onValue(ref(db,'pachanga'),(snapshot)=>{
 },()=>{document.getElementById('loading-overlay').style.display='none';setSyncStatus('error','✗ Sin conexión');});
 
 renderViernesDisplay();
+initLogin();
 </script>
 </body>
 </html>
