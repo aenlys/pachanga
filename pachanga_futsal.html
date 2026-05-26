@@ -590,7 +590,8 @@ function renderSeleccionJugadores(){
   const el=document.getElementById('seleccion-jugadores');
   const jugadores=state.jugadores||[];
   if(!jugadores.length){el.innerHTML='<span style="color:var(--gris);font-size:13px">Añade jugadores en la pestaña Jugadores</span>';return;}
-  el.innerHTML=jugadores.map(j=>{
+  const jugadoresOrdenados=[...jugadores].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  el.innerHTML=jugadoresOrdenados.map(j=>{
     const sel=jugadoresSeleccionados.includes(j.nombre);
     const pts=calcPuntuacion(j.nombre);
     return `<span class="sel-chip ${sel?'seleccionado':'inactivo'}" onclick="toggleSeleccion('${j.nombre}')">${j.nombre}<span class="sel-score">${pts}</span></span>`;
@@ -679,7 +680,9 @@ function renderHistorial(){
   const partidos=filtrarPartidos('sel-temporada-historial').slice().sort((a,b)=>b.fechaKey.localeCompare(a.fechaKey));
   if(!partidos.length){el.innerHTML='<div class="empty-state"><span class="icon">📭</span>No hay partidos en esta temporada</div>';return;}
   el.innerHTML=partidos.map(p=>{
-    const gr=p.marcador.rojo,ga=p.marcador.azul;
+    // Recalcular marcador desde goles individuales (fuente de verdad)
+    const gr=Object.values(p.goles||{}).filter(v=>v.equipo==='rojo').reduce((a,v)=>a+(v.goles||0),0);
+    const ga=Object.values(p.goles||{}).filter(v=>v.equipo==='azul').reduce((a,v)=>a+(v.goles||0),0);
     const badge=gr>ga?'<span class="ganador-badge rojo">🔴 Gana Rojo</span>':ga>gr?'<span class="ganador-badge azul">🔵 Gana Azul</span>':'<span class="ganador-badge empate">🤝 Empate</span>';
     const gR=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='rojo'&&v.goles>0).map(([n,v])=>`<span class="gol-badge rojo">⚽ ${n}: ${v.goles}</span>`).join('');
     const gA=Object.entries(p.goles||{}).filter(([_,v])=>v.equipo==='azul'&&v.goles>0).map(([n,v])=>`<span class="gol-badge azul">⚽ ${n}: ${v.goles}</span>`).join('');
@@ -754,6 +757,16 @@ window.guardarEdicion=function(){if(!isAdmin){toast('🔒 Solo el admin puede ed
     }
   });
 
+  // Recalcular marcador desde goles individuales
+  const nuevoGr=Object.values(p.goles).filter(v=>v.equipo==='rojo').reduce((a,v)=>a+(v.goles||0),0);
+  const nuevoGa=Object.values(p.goles).filter(v=>v.equipo==='azul').reduce((a,v)=>a+(v.goles||0),0);
+  p.marcador.rojo=nuevoGr; p.marcador.azul=nuevoGa;
+  // Recalcular resultado de todos los jugadores según nuevo marcador
+  const resR2=nuevoGr>nuevoGa?'victoria':nuevoGr<nuevoGa?'derrota':'empate';
+  const resA2=nuevoGa>nuevoGr?'victoria':nuevoGa<nuevoGr?'derrota':'empate';
+  Object.entries(p.goles).forEach(([n,v])=>{
+    v.resultado = v.equipo==='rojo' ? resR2 : resA2;
+  });
   state.partidos=state.partidos.map(x=>x.id===_editId?p:x);
   save();
   document.getElementById('modal-editar').style.display='none';
@@ -781,7 +794,7 @@ function renderEstadisticas(){
   const partidos=filtrarPartidos('sel-temporada-stats');
   const conG=partidos.filter(p=>p.marcador.rojo!==p.marcador.azul).length;
   const emp=partidos.filter(p=>p.marcador.rojo===p.marcador.azul).length;
-  const golesT=partidos.reduce((a,p)=>a+p.marcador.rojo+p.marcador.azul,0);
+  const golesT=partidos.reduce((a,p)=>a+Object.values(p.goles||{}).reduce((s,v)=>s+(v.goles||0),0),0);
   document.getElementById('resumen-global').innerHTML=`
     <div class="resumen-item"><div class="resumen-num">${partidos.length}</div><div class="resumen-label">Partidos</div></div>
     <div class="resumen-item"><div class="resumen-num" style="color:#4ade80">${conG}</div><div class="resumen-label">Con ganador</div></div>
@@ -1016,7 +1029,7 @@ function renderResumen(){
 
   const conG=partidos.filter(p=>p.marcador.rojo!==p.marcador.azul).length;
   const emp=partidos.filter(p=>p.marcador.rojo===p.marcador.azul).length;
-  const golesT=partidos.reduce((a,p)=>a+p.marcador.rojo+p.marcador.azul,0);
+  const golesT=partidos.reduce((a,p)=>a+Object.values(p.goles||{}).reduce((s,v)=>s+(v.goles||0),0),0);
   const vicR=partidos.filter(p=>p.marcador.rojo>p.marcador.azul).length;
   const vicA=partidos.filter(p=>p.marcador.azul>p.marcador.rojo).length;
   document.getElementById('resumen-temporada').innerHTML=`
@@ -1043,7 +1056,8 @@ function skillsHTML(j){return `<div class="skills-grid">${SKILLS_DEF.map(s=>{con
 function renderJugadores(){
   const el=document.getElementById('lista-jugadores');
   if(!(state.jugadores||[]).length){el.innerHTML='<div class="empty-state" style="width:100%;padding:20px">Aún no hay jugadores</div>';return;}
-  el.innerHTML=state.jugadores.map(j=>`<div class="jugador-card"><div class="jugador-card-header"><div class="jugador-nombre-wrap"><span>⚽</span><span class="jugador-nombre-text" id="nombre-text-${j.id}">${j.nombre}</span><input class="jugador-nombre-input" id="nombre-input-${j.id}" type="text" value="${j.nombre}"></div><div class="jugador-acciones"><button class="btn btn-ghost" id="nombre-btn-${j.id}" onclick="toggleEditNombre('${j.id}')">✏️ Editar</button><button class="btn btn-rojo" onclick="removeJugador('${j.id}')">🗑</button></div></div>${skillsHTML(j)}</div>`).join('');
+  const jugsOrdenados=[...(state.jugadores||[])].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  el.innerHTML=jugsOrdenados.map(j=>`<div class="jugador-card"><div class="jugador-card-header"><div class="jugador-nombre-wrap"><span>⚽</span><span class="jugador-nombre-text" id="nombre-text-${j.id}">${j.nombre}</span><input class="jugador-nombre-input" id="nombre-input-${j.id}" type="text" value="${j.nombre}"></div><div class="jugador-acciones"><button class="btn btn-ghost" id="nombre-btn-${j.id}" onclick="toggleEditNombre('${j.id}')">✏️ Editar</button><button class="btn btn-rojo" onclick="removeJugador('${j.id}')">🗑</button></div></div>${skillsHTML(j)}</div>`).join('');
 }
 
 // ── TABS ──
@@ -1104,12 +1118,8 @@ function setRol(rol, guardar=true){
 
   // Ocultar/mostrar tabs de edición
   const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(t => {
-    const txt = t.textContent.trim();
-    if(txt.includes('Partido')){
-      t.style.display = isAdmin ? '' : 'none';
-    }
-  });
+  // Invitados ven todas las pestañas excepto ninguna
+  // Solo se oculta el botón de guardar via edit-only
 
   document.getElementById('login-overlay').style.display='none';
 }
